@@ -6,11 +6,11 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <title>Gym Bros!!</title>
-<meta name="theme-color" content="#111110">
+<meta name="theme-color" content="#121212">
 <meta name="apple-mobile-web-app-title" content="Gym Bros!!">
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;600;700;800&family=Yellowtail&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#111110;--sf:#1B1B19;--ink:#EDEAE0;--mut:#9A978C;--ln:#3A3935;--ac:#EDEAE0;--acx:#111110;--wr:#E7956E;--in:#262522}
+:root{--bg:#121212;--sf:#1C1C1C;--ink:#ECECEC;--mut:#9B9B9B;--ln:#3A3A3A;--ac:#ECECEC;--acx:#121212;--wr:#E7956E;--in:#262626}
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *,*:before,*:after{box-sizing:inherit}
@@ -40,7 +40,7 @@ svg{width:100%;height:auto;display:block}
 #rt{position:fixed;left:10px;right:10px;bottom:calc(64px + env(safe-area-inset-bottom,0px));max-width:540px;margin:0 auto;display:flex;align-items:center;gap:8px;background:var(--ink);color:var(--bg);border-radius:14px;padding:10px 12px;box-shadow:0 4px 16px rgba(0,0,0,.25)}
 #rt[hidden],nav[hidden]{display:none}#rt .mut{color:inherit;opacity:.7;flex:1}#rt button{padding:8px 11px}#rt .big{font-size:28px}
 
-body{font-family:Rubik,system-ui,-apple-system,sans-serif;font-size:15px;font-weight:500;background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 .98 0 0 0 0 .9 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+body{font-family:Rubik,system-ui,-apple-system,sans-serif;font-size:15px;font-weight:500;background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 h1,h2,h3,.big{font-family:Rubik,system-ui,sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
 h1{font-size:28px}h2{font-size:19px;margin-top:22px}h3{font-size:16px;letter-spacing:.05em}
 .big{font-size:34px;letter-spacing:.02em}#rt .big{font-size:28px}
@@ -52,7 +52,7 @@ button.p{background:var(--ac);color:var(--acx);border-color:var(--ac);box-shadow
 .set button.on,.chips button.on{background:var(--ac);color:var(--acx);border-color:var(--ac)}
 button.d{color:var(--wr)}
 input,select{border:1.5px solid var(--ln);border-radius:10px;font-family:Rubik,sans-serif;font-weight:500}
-nav{border-top:1.5px solid var(--ln);background:#0b0b0a}
+nav{border-top:1.5px solid var(--ln);background:#0A0A0A}
 nav button{border:0;background:none;font-size:13px}nav button.on{color:var(--ac)}
 #rt{background:var(--ac);color:var(--acx);border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,.5)}
 #rt button{background:var(--acx);color:var(--ac);border-color:var(--acx)}
