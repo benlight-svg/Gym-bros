@@ -65,6 +65,11 @@ nav button{border:0;background:none;font-size:13px}nav button.on{color:var(--ac)
 html,body{max-width:100vw;overflow-x:hidden;overscroll-behavior-x:none;touch-action:pan-y}
 main{width:100%;overflow-x:hidden}
 input,select,.set>*,.grid>*,.row>*{min-width:0}
+button{text-indent:.08em;white-space:nowrap}
+.row>button{flex:none;min-width:auto}
+input,select{height:44px}
+[data-a="up"],[data-a="dn"],[data-a="delex"]{width:44px;height:44px;padding:0;text-indent:0;display:inline-flex;align-items:center;justify-content:center;font-size:18px}
+[data-a="delplan"],[data-a="addex"]{width:92px;height:44px;padding:0;display:inline-flex;align-items:center;justify-content:center}
 </style>
 </head>
 <body>
@@ -167,7 +172,7 @@ function viewLog(){const a=S.active;
  <button class="w d" style="margin-top:8px" data-a="cancel">Discard workout</button>`}
 
 function viewPlans(){return `<h1>Plans</h1>
- ${S.plans.map(p=>`<div class="card"><div class="row"><input value="${esc(p.name)}" data-f="pn" data-p="${p.id}" aria-label="Plan name"><button class="d" data-a="delplan" data-p="${p.id}">Delete</button></div>
+ ${S.plans.map(p=>`<div class="card"><div class="row" style="margin-bottom:14px"><input value="${esc(p.name)}" data-f="pn" data-p="${p.id}" aria-label="Plan name"><button class="d" data-a="delplan" data-p="${p.id}">Delete</button></div>
  ${p.ex.map((n,i)=>`<div class="row sp pr"><span>${esc(n)}</span><span class="row"><button data-a="up" data-p="${p.id}" data-i="${i}" aria-label="Move up">↑</button><button data-a="dn" data-p="${p.id}" data-i="${i}" aria-label="Move down">↓</button><button class="d" data-a="delex" data-p="${p.id}" data-i="${i}" aria-label="Remove">✕</button></span></div>`).join('')}
  <div class="row" style="margin-top:10px"><input placeholder="Add exercise" id="n${p.id}"><button class="p" data-a="addex" data-p="${p.id}">Add</button></div></div>`).join('')}
  <button class="w p" data-a="newplan">New plan</button>
