@@ -83,6 +83,9 @@ input,select,textarea{font-size:16px}
 html{-webkit-text-size-adjust:100%}
 input::placeholder{color:var(--mut);opacity:.55}
 .tr{width:18px;height:18px;color:var(--ac);flex:none;vertical-align:-4px;margin-right:8px}
+body.lgn{padding-bottom:0}
+.authpage{display:flex;flex-direction:column;justify-content:center;min-height:calc(100vh - 28px);min-height:calc(100dvh - 28px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))}
+.authpage .lock{margin-top:0}
 </style>
 </head>
 <body>
@@ -232,13 +235,13 @@ function viewEx0(){const ns=names();if(!pe||!ns.includes(pe))pe=ns[0]||'';
  <div class="pr row sp"><span>${TRO}Highest volume</span><span><b>${Math.round(bv.vol)} kg</b> <span class="mut">${fd(bv.t)}</span></span></div></div>`}`}
 
 function viewAuth(){const up=AUTH.mode==='up';
- return `${LOCK}<div class="auth">
+ return `<div class="authpage">${LOCK}<div class="auth">
  ${up?'<input id="an" placeholder="Display name (shown on leaderboard)" style="margin:12px 0 8px">':''}
  <input id="ae" type="email" placeholder="Email" autocomplete="email" style="margin:12px 0 8px">
  <input id="ap" type="password" placeholder="Password (6+ characters)" autocomplete="${up?'new-password':'current-password'}" style="margin-bottom:12px">
  ${AUTH.msg?`<div style="margin-bottom:12px;color:var(--wr)">${esc(AUTH.msg)}</div>`:''}
  <button class="p w" data-a="auth">${up?'Sign up':'Log in'}</button>
- <button class="w" style="margin-top:8px" data-a="authmode">${up?'I already have an account':'Create an account'}</button></div>`}
+ <button class="w" style="margin-top:8px" data-a="authmode">${up?'I already have an account':'Create an account'}</button></div></div>`}
 function viewBoard(){
  if(L.rows===null)return '<h1>Leaderboard</h1><p class="mut">Loading…</p>';
  const msg=L.msg?`<div class="mut" style="color:var(--wr)">${esc(L.msg)}</div>`:'';
@@ -265,7 +268,7 @@ async function delWk(id){if(!confirm('Delete this workout? This cannot be undone
 function render(){if(!S.active&&rend)rtStop();
  $('#v').innerHTML=!READY?'<p class="mut">Loading…</p>':!ME?viewAuth():tab==='train'?(S.active?viewLog():viewHome()):tab==='plans'?viewPlans():tab==='board'?viewBoard():viewProg();
  if($('#ae'))$('#ae').value=AUTH.e||'';
- $('nav').hidden=!ME;$('#hm').hidden=!(ME&&S.active&&tab==='train');
+ $('nav').hidden=!ME;document.body.classList.toggle('lgn',READY&&!ME);$('#hm').hidden=!(ME&&S.active&&tab==='train');
  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===tab))}
 const P=id=>S.plans.find(p=>p.id===id);
 document.addEventListener('click',e=>{
