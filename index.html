@@ -81,6 +81,7 @@ input,select{height:44px}
 .hx{margin-top:10px;padding-top:8px;border-top:1px dashed var(--ln)}.hx div{display:flex;justify-content:space-between;gap:12px;padding:3px 0;font-size:14px}
 input,select,textarea{font-size:16px}
 html{-webkit-text-size-adjust:100%}
+input::placeholder{color:var(--mut);opacity:.55}
 </style>
 </head>
 <body>
@@ -164,7 +165,7 @@ const done=ex=>ex.sets.filter(s=>(s.d||s.t)&&+s.w>=0&&+s.r>0);
 function last(name){for(let i=S.workouts.length-1;i>=0;i--){const e=S.workouts[i].ex.find(x=>x.name===name);if(e&&e.sets.length)return e.sets}return null}
 const wk=t=>{const d=new Date(t);d.setHours(0,0,0,0);d.setDate(d.getDate()-((d.getDay()+6)%7));return d.getTime()};
 function streak(){const w=new Set(S.workouts.map(x=>wk(x.date)));let c=wk(Date.now()),n=0;if(!w.has(c))c=wk(c-864e5*3);while(w.has(c)){n++;c=wk(c-864e5*3)}return n}
-function start(id){const p=S.plans.find(x=>x.id===id);S.active={id:uid(),date:Date.now(),plan:p.name,ex:p.ex.map(n=>{const l=last(n);return{name:n,sets:l?l.map(s=>({w:s.w,r:s.r,d:false})):[{w:'',r:'',d:false}]}})};save();render()}
+function start(id){const p=S.plans.find(x=>x.id===id);S.active={id:uid(),date:Date.now(),plan:p.name,ex:p.ex.map(n=>{const l=last(n);return{name:n,sets:l?l.map(s=>({w:'',r:'',d:false,pw:s.w,pr:s.r})):[{w:'',r:'',d:false}]}})};save();render()}
 let FLASH='',HX={};
 const HICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
 function hxPanel(n){const h=hist(n).slice(-5).reverse();
@@ -184,11 +185,11 @@ function viewHome(){
  ${S.plans.map(p=>`<div class="card row sp"><div><h3>${esc(p.name)}</h3><div class="mut">${p.ex.length} exercises</div></div><button class="p" data-a="start" data-p="${p.id}">Start</button></div>`).join('')||'<div class="card mut">Add a plan in the Plans tab.</div>'}`}
 
 function viewLog(){const a=S.active;
- return `<h1>${esc(a.plan)}</h1><div class="mut">Type in a set and it counts automatically. Tick it to start the rest timer. Exercises you skip are left out.</div>
+ return `<h1>${esc(a.plan)}</h1><div class="mut">Last session's numbers show in grey. Type to log a set, or tick a set to use the grey numbers and start the rest timer. Exercises you skip are left out.</div>
  <div class="row" style="margin-top:8px"><span class="mut">Rest</span><span class="chips" style="margin:0">${[60,90,120,180].map(v=>`<button class="${(S.rest||90)===v?'on':''}" data-a="rd" data-v="${v}">${v<120?v+'s':v/60+'m'}</button>`).join('')}</span></div>
  <div class="row" style="margin-top:8px"><span class="mut">Date</span><input type="date" data-f="dt" value="${dstr(a.date)}" max="${dstr(Date.now())}"></div>
  ${a.ex.map((e,i)=>{const l=last(e.name);return `<div class="card"><div class="row sp"><h3>${esc(e.name)}</h3><button class="hb" data-a="hx" data-i="${i}" aria-label="Show previous sessions">${HICON}</button></div><div class="mut">${l?'Last time: '+fs(l):'First time logging this'}</div>${HX[e.name]?hxPanel(e.name):''}
- ${e.sets.map((s,j)=>`<div class="set"><b>${j+1}</b><input inputmode="decimal" placeholder="kg" value="${s.w}" data-f="w" data-i="${i}" data-j="${j}" aria-label="Weight"><input inputmode="numeric" placeholder="reps" value="${s.r}" data-f="r" data-i="${i}" data-j="${j}" aria-label="Reps"><button class="${s.d?'on':''}" data-a="tick" data-i="${i}" data-j="${j}" aria-label="Mark set done">✓</button></div>`).join('')}
+ ${e.sets.map((s,j)=>`<div class="set"><b>${j+1}</b><input inputmode="decimal" placeholder="${s.pw!==undefined?s.pw:'kg'}" value="${s.w}" data-f="w" data-i="${i}" data-j="${j}" aria-label="Weight"><input inputmode="numeric" placeholder="${s.pr!==undefined?s.pr:'reps'}" value="${s.r}" data-f="r" data-i="${i}" data-j="${j}" aria-label="Reps"><button class="${s.d?'on':''}" data-a="tick" data-i="${i}" data-j="${j}" aria-label="Mark set done">✓</button></div>`).join('')}
  <div class="row" style="margin-top:10px"><button data-a="addset" data-i="${i}">+ Add set</button><button class="d" data-a="rmset" data-i="${i}">Remove set</button></div></div>`}).join('')}
  <button class="p w" data-a="finish">Finish workout</button>
  <button class="w d" style="margin-top:8px" data-a="cancel">Discard workout</button>`}
@@ -259,8 +260,8 @@ document.addEventListener('click',e=>{
  if(a==='start')start(D.p);
  else if(a==='finish')finish();
  else if(a==='cancel'){if(confirm('Discard this workout?')){S.active=null;save();render()}}
- else if(a==='tick'){const s=S.active.ex[i].sets[j];s.d=!s.d;if(s.d)rest(S.rest||90);save();render()}
- else if(a==='addset'){const s=S.active.ex[i].sets,l=s[s.length-1];s.push({w:l?l.w:'',r:l?l.r:'',d:false});save();render()}
+ else if(a==='tick'){const s=S.active.ex[i].sets[j];s.d=!s.d;if(s.d){if(s.w===''&&s.pw!==undefined)s.w=s.pw;if(s.r===''&&s.pr!==undefined)s.r=s.pr;rest(S.rest||90)}save();render()}
+ else if(a==='addset'){const s=S.active.ex[i].sets,l=s[s.length-1];s.push({w:'',r:'',d:false,pw:l?(l.w!==''?l.w:l.pw):undefined,pr:l?(l.r!==''?l.r:l.pr):undefined});save();render()}
  else if(a==='rmset'){const s=S.active.ex[i].sets;if(s.length>1)s.pop();save();render()}
  else if(a==='newplan'){S.plans.push({id:uid(),name:'New plan',ex:[]});save();render()}
  else if(a==='delplan'){if(confirm('Delete this plan? Logged workouts are kept.')){S.plans=S.plans.filter(p=>p.id!==D.p);save();render()}}
