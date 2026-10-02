@@ -74,7 +74,7 @@ input,select{height:44px}
 [data-a="delplan"],[data-a="addex"]{width:92px;height:44px;padding:0;display:inline-flex;align-items:center;justify-content:center}
 .lock{max-width:240px;margin:8px auto 14px}
 .auth input,.auth button:not(.p){background:var(--sf)}
-.lock-s{max-width:300px}
+.lock-s{max-width:240px;width:calc(100% - 48px);margin:36px auto 28px}
 #hm{position:absolute;top:10px;right:62px;width:42px;height:42px;padding:0;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--in);color:var(--ink);z-index:5}
 #hm svg{width:50%;height:50%}#hm[hidden]{display:none}
 .hb{width:40px;height:40px;padding:0;text-indent:0;border-radius:50%;display:inline-flex;align-items:center;justify-content:center}.hb svg{width:50%;height:50%}
@@ -115,11 +115,12 @@ async function syncPlans(){const u=ME.id;
 async function pushWorkout(a){
  let r=await sb.from('workouts').insert({id:a.id,plan_name:a.plan,started_at:new Date(a.date).toISOString()});if(r.error)return fail(r.error);
  const rows=a.ex.flatMap(e=>e.sets.map((s,i)=>({workout_id:a.id,exercise:e.name,set_no:i+1,weight:s.w,reps:s.r})));
- if(rows.length){r=await sb.from('workout_sets').insert(rows);if(r.error)fail(r.error)}}
+ if(rows.length){r=await sb.from('workout_sets').insert(rows);if(r.error)return fail(r.error)}return true}
 async function load(){
  const [pl,pe,wo,ws,pf]=await Promise.all([sb.from('plans').select('*').order('pos'),sb.from('plan_exercises').select('*').order('pos'),
   sb.from('workouts').select('*').order('started_at'),sb.from('workout_sets').select('*').order('set_no'),
   sb.from('profiles').select('display_name').eq('id',ME.id).maybeSingle()]);
+ const bad=[pl,pe,wo,ws].find(x=>x.error);if(bad)alert('Could not load your saved data: '+bad.error.message);
  ME.name=pf.data?pf.data.display_name:'';
  const had=pl.data&&pl.data.length;
  let plans=(pl.data||[]).map(p=>({id:p.id,name:p.name,ex:(pe.data||[]).filter(e=>e.plan_id===p.id).map(e=>e.name)}));
@@ -170,7 +171,7 @@ function hxPanel(n){const h=hist(n).slice(-5).reverse();
  return '<div class="hx">'+(h.length?h.map(x=>`<div><span class="mut">${fd(x.t)}</span><b>${fs(x.sets)}</b></div>`).join(''):'<div class="mut">No previous sessions yet.</div>')+'</div>'}
 const dstr=t=>{const d=new Date(t);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 function finish(){const a=S.active;
-a.ex=a.ex.map(e=>({name:e.name,sets:done(e).map(s=>({w:+s.w,r:+s.r}))})).filter(e=>e.sets.length);FLASH=a.ex.length?'Workout saved':'No sets entered';if(a.ex.length){S.workouts.push(a);S.workouts.sort((x,y)=>x.date-y.date);pushWorkout(a)}setTimeout(()=>{FLASH='';if(!S.active&&tab==='train')render()},4000);S.active=null;save();render()}
+a.ex=a.ex.map(e=>({name:e.name,sets:done(e).map(s=>({w:+s.w,r:+s.r}))})).filter(e=>e.sets.length);FLASH=a.ex.length?'Saving…':'No sets entered';const clr=()=>setTimeout(()=>{FLASH='';if(!S.active&&tab==='train')render()},5000);if(a.ex.length){S.workouts.push(a);S.workouts.sort((x,y)=>x.date-y.date);pushWorkout(a).then(ok=>{FLASH=ok?'Workout saved to your account':'Saved on this phone only. Upload failed';if(!S.active&&tab==='train')render();clr()})}else clr();S.active=null;save();render()}
 
 function viewHome(){
  const l=S.workouts[S.workouts.length-1];
