@@ -98,6 +98,7 @@ h1,h2,h3,.big,button,b,strong{font-family:var(--f);font-weight:700}
 h1,h2,h3,.big{letter-spacing:.07em}
 button{letter-spacing:.09em}
 .hb.up{color:var(--ac);border-color:var(--ac)}
+.card input[type=date]{min-height:44px}
 </style>
 </head>
 <body>
@@ -120,7 +121,7 @@ const SEED=[
  {name:'Push',ex:['Bench Press','Incline Dumbbell Press','Shoulder Press','Lateral Raise','Triceps Pushdown']},
  {name:'Pull',ex:['Deadlift','Lat Pulldown','Seated Row','Face Pull','Biceps Curl']},
  {name:'Legs',ex:['Squat','Leg Press','Leg Curl','Leg Extension','Calf Raise']}];
-let S={plans:[],workouts:[],active:null,rest:90,xs:{},bw:null},ME=null,READY=false,PS='',pt=null;
+let S={plans:[],workouts:[],active:null,rest:90,xs:{},bw:null,cut:null,cutErr:''},ME=null,READY=false,PS='',pt=null;
 let L={groups:null,sel:null,rows:null,wk:0,msg:'',add:false},AUTH={mode:'in',msg:'',e:''};
 const fail=e=>alert('Could not save: '+e.message);
 async function ins(t,rows,opt){let r=await sb.from(t).insert(rows);if(r.error&&/column|schema cache/i.test(r.error.message)){r=await sb.from(t).insert(rows.map(x=>{const y={...x};opt.forEach(k=>delete y[k]);return y}))}return r}
@@ -138,9 +139,9 @@ async function pushWorkout(a){
  const rows=a.ex.flatMap(e=>e.sets.map((s,i)=>({workout_id:a.id,exercise:e.name,set_no:i+1,weight:s.w,reps:s.r,bw:s.bw||0,note:i===0?(e.note||null):null})));
  if(rows.length){r=await ins('workout_sets',rows,['bw','note']);if(r.error)return fail(r.error)}return true}
 async function load(){
- const [pl,pe,wo,ws,pf,xr]=await Promise.all([sb.from('plans').select('*').order('pos'),sb.from('plan_exercises').select('*').order('pos'),
+ const [pl,pe,wo,ws,pf,xr,cp,cl,cm]=await Promise.all([sb.from('plans').select('*').order('pos'),sb.from('plan_exercises').select('*').order('pos'),
   sb.from('workouts').select('*').order('started_at'),sb.from('workout_sets').select('*').order('set_no'),
-  sb.from('profiles').select('*').eq('id',ME.id).maybeSingle(),sb.from('exercise_settings').select('*')]);
+  sb.from('profiles').select('*').eq('id',ME.id).maybeSingle(),sb.from('exercise_settings').select('*'),sb.from('cut_plans').select('*').order('start_date'),sb.from('cut_logs').select('*'),sb.from('cut_measures').select('*')]);
  const bad=[pl,pe,wo,ws].find(x=>x.error);if(bad)alert('Could not load your saved data: '+bad.error.message);
  ME.name=pf.data?pf.data.display_name:'';
  const had=pl.data&&pl.data.length;
@@ -152,19 +153,24 @@ async function load(){
   return{id:w.id,date:new Date(w.started_at).getTime(),plan:w.plan_name,ex:[...m].map(([name,ss])=>({name,note:(ss.find(x=>x.note)||{}).note||'',sets:ss.map(x=>({w:x.w,r:x.r,bw:x.bw}))}))}});
  const xs={};(xr.data||[]).forEach(r=>{xs[r.name]={bw:!!r.bw,rest:r.rest_sec||null}});
  let loc={};try{loc=JSON.parse(localStorage.getItem(lsk()))||{}}catch(e){}
- S={plans,workouts,active:loc.active||null,rest:loc.rest||90,xs,bw:pf.data&&pf.data.bodyweight!=null?+pf.data.bodyweight:null};
+ let cut=null;const cpl=(cp.data||[]).filter(x=>x.active!==false).pop();
+ if(cpl){const logs={},meas={};(cl.data||[]).filter(x=>x.plan_id===cpl.id).forEach(x=>{logs[String(x.day).slice(0,10)]=x});(cm.data||[]).filter(x=>x.plan_id===cpl.id).forEach(x=>{meas[x.week]=x});cut={plan:cpl,logs,meas}}
+ S={plans,workouts,cut,cutErr:cp.error?cp.error.message:'',active:loc.active||null,rest:loc.rest||90,xs,bw:pf.data&&pf.data.bodyweight!=null?+pf.data.bodyweight:null};
  PS=had?JSON.stringify(plans):'';save()}
 function demoClient(){const T={};const tb=n=>T[n]=T[n]||[];
  const d0=Date.now();
  T.profiles=[{id:'demo',display_name:'Demo',bodyweight:80}];
  T.workouts=[{id:'dw1',user_id:'demo',plan_name:'Push',started_at:new Date(d0-7*864e5).toISOString()}];
  T.workout_sets=[1,2,3].map(n=>({workout_id:'dw1',exercise:'Bench Press',set_no:n,weight:80,reps:10,bw:0,note:n===1?'seat on 4':null})).concat([1,2,3].map(n=>({workout_id:'dw1',exercise:'Shoulder Press',set_no:n,weight:40,reps:8,bw:0,note:null})));
+ T.cut_plans=[{id:'cp0',user_id:'demo',start_date:addDays(dstr(d0),-13),age:35,height:170,gender:'M',start_weight:85.7,avg_steps:3000,protein:170,carbs:165,fats:45,kcal:1750,refeed_carbs:230,refeed_kcal:2300,step_target:4000,active:true}];
+ T.cut_logs=Array.from({length:13},(_,i)=>({plan_id:'cp0',user_id:'demo',day:addDays(dstr(d0),-13+i),protein:165+(i%3)*4,carbs:150+(i%4)*10,fats:44,kcal:0,weight:+(85.7-i*0.12+((i*7)%3)*0.2).toFixed(1),steps:3600+(i*350)%2500,cardio:null,training:i%2?'Push':'Pull',refeed:false})).map(r=>({...r,kcal:r.protein*4+r.carbs*4+r.fats*9}));
+ T.cut_measures=[{plan_id:'cp0',week:0,chest:104.5,waist:92,hips:91,arms:37.5}];
  T.groups=[{id:'g0',name:'Demo Crew',invite_code:'DEMO01'}];T.group_members=[{group_id:'g0',user_id:'demo'}];
- const from=t=>{let op='select',f=[],rows=null,vals=null,single=false,ord=null,cols='';
-  const b={select(c){op='select';cols=c||'';return b},order(c){ord=c;return b},eq(c,v){f.push([c,v]);return b},insert(r){op='insert';rows=[].concat(r);return b},delete(){op='delete';return b},upsert(r){op='upsert';rows=[].concat(r);return b},update(v){op='update';vals=v;return b},maybeSingle(){single=true;return b},
+ const from=t=>{let op='select',f=[],rows=null,vals=null,single=false,ord=null,cols='',oc=['name'];
+  const b={select(c){op='select';cols=c||'';return b},order(c){ord=c;return b},eq(c,v){f.push([c,v]);return b},insert(r){op='insert';rows=[].concat(r);return b},delete(){op='delete';return b},upsert(r,o){op='upsert';rows=[].concat(r);oc=((o&&o.onConflict)||'name').split(',');return b},update(v){op='update';vals=v;return b},maybeSingle(){single=true;return b},
    then(res,rej){const d=tb(t);let data=null;
     if(op==='insert')rows.forEach(r=>d.push({user_id:'demo',...r}));
-    else if(op==='upsert')rows.forEach(r=>{const k=d.findIndex(x=>x.name===r.name);k>=0?Object.assign(d[k],r):d.push(r)});
+    else if(op==='upsert')rows.forEach(r=>{const k=d.findIndex(x=>oc.every(c=>String(x[c])===String(r[c])));k>=0?Object.assign(d[k],r):d.push({user_id:'demo',...r})});
     else if(op==='update')d.forEach(r=>{if(f.every(([c,v])=>r[c]===v))Object.assign(r,vals)});
     else if(op==='delete')T[t]=d.filter(r=>!f.every(([c,v])=>r[c]===v));
     else{data=d.filter(r=>f.every(([c,v])=>r[c]===v));if(ord)data.sort((x,y)=>x[ord]>y[ord]?1:-1);if(single)data=data[0]||null;
@@ -271,6 +277,7 @@ function viewHome(){
  <div class="grid"><div class="card stat"><div class="big">${streak()}</div><div class="mut">week streak</div></div>
  <div class="card stat"><div class="big">${S.workouts.length}</div><div class="mut">workouts logged</div></div></div>
  ${l?`<div class="card"><div class="mut">Last workout · ${fd(l.date)}</div><h3>${esc(l.plan)}</h3><div class="mut">${l.ex.length} exercises, ${l.ex.reduce((a,e)=>a+e.sets.length,0)} sets</div></div>`:`<div class="card mut">No workouts yet. Pick a plan below to log your first one.</div>`}
+ ${cutCard()}
  <h2>Start a workout</h2>
  ${S.plans.map(p=>`<div class="card row sp"><div><h3>${esc(p.name)}</h3><div class="mut">${p.ex.length} exercises</div></div><button class="p" data-a="start" data-p="${p.id}">Start</button></div>`).join('')||'<div class="card mut">Add a plan in the Plans tab.</div>'}`}
 
@@ -367,10 +374,84 @@ function viewWk(tabs){const W=[...S.workouts].reverse();
 async function delWk(id){if(!confirm('Delete this workout? This cannot be undone.'))return;
  const r=await sb.from('workouts').delete().eq('id',id);if(r.error)return fail(r.error);
  S.workouts=S.workouts.filter(w=>w.id!==id);render()}
+const mround=(x,m)=>Math.round(x/m)*m;
+function cutCalc(i){const g=i.gender==='M'?0:-161,f18=((10*i.weight+6.25*i.height-5*i.age)+g)*1.05,g18=f18*1.25,g19=(f18*7-g18)/6;
+ const kcal=mround(g19,50),ref=mround(g18,50),prot=mround(i.weight>90?i.weight*1.5:i.weight*2,5),fat=mround(i.weight*0.55,5);
+ const carbs=mround((kcal-(fat*9+prot*4))/4,5),rc=mround((ref-(fat*9+prot*4))/4,5),h=i.steps>15000?i.steps*1.05:i.steps*1.25;
+ return{protein:prot,carbs,fats:fat,kcal,refeed_carbs:rc,refeed_kcal:ref,step_target:Math.ceil(h/1000)*1000}}
+const addDays=(s,n)=>{const d=new Date(String(s).slice(0,10)+'T12:00:00');d.setDate(d.getDate()+n);return dstr(d)};
+const dIdx=(p,day)=>Math.round((new Date(day+'T12:00:00')-new Date(String(p.start_date).slice(0,10)+'T12:00:00'))/864e5)+1;
+let CF={gender:'M',start:dstr(Date.now()),show:false},CL=null,CTE=false,CM=0,CMV={},CUTMSG='';
+function cutInfo(){const p=S.cut&&S.cut.plan;if(!p)return null;const t=dstr(Date.now()),i=dIdx(p,t);return{p,t,i,w:Math.min(8,Math.max(1,Math.ceil(i/7))),done:i>56,before:i<1}}
+const cutStatus=I=>I.done?'Plan complete':I.before?'Starts '+fdl(new Date(String(I.p.start_date).slice(0,10)+'T12:00:00')):'Week '+I.w+' of 8 · Day '+I.i+' of 56';
+function cutCard(){const I=cutInfo();
+ if(!I)return `<div class="card"><h3>8-week fat loss plan</h3><div class="mut" style="margin:6px 0 12px">Daily macros, a step target and weight tracking over 8 weeks.</div><button class="p w" data-a="opencut">Set up plan</button></div>`;
+ const p=I.p,l=S.cut.logs[I.t];
+ return `<div class="card"><div class="row sp"><h3>Fat loss</h3><span class="mut">${cutStatus(I)}</span></div><div class="mut" style="margin:8px 0">Today: ${p.kcal} kcal · P ${p.protein} · C ${p.carbs} · F ${p.fats} · ${Number(p.step_target).toLocaleString()} steps</div><div class="mut">${l?'Logged today: '+Math.round(l.kcal||0)+' kcal'+(l.weight!=null?' · '+l.weight+' kg':''):'Not logged yet'}</div><button class="p w" style="margin-top:12px" data-a="opencut">${l?'Open plan':'Log today'}</button></div>`}
+const tgtHTML=t=>`<div class="grid"><div class="stat"><div class="mut">Normal day</div><h3>${t.kcal} kcal</h3><div class="mut">P ${t.protein} · C ${t.carbs} · F ${t.fats}</div></div><div class="stat"><div class="mut">Refeed day</div><h3>${t.refeed_kcal} kcal</h3><div class="mut">P ${t.protein} · C ${t.refeed_carbs} · F ${t.fats}</div></div></div><div class="stat" style="margin-top:10px"><div class="mut">Daily step target</div><h3>${Number(t.step_target).toLocaleString()}</h3></div>`;
+function cutSetup(){const c=CF,ok=+c.age&&+c.height&&+c.weight&&+c.steps;
+ const f=(k,l,ph,type)=>`<div class="mut" style="margin:12px 0 4px">${l}</div><input data-f="cf" data-k="${k}" ${type?'type="'+type+'"':'inputmode="decimal"'} placeholder="${ph}" value="${c[k]??''}">`;
+ let pv='';if(c.show&&ok){const r=cutCalc({age:+c.age,height:+c.height,weight:+c.weight,gender:c.gender,steps:+c.steps});pv=`<div class="card"><h3>Your targets</h3><div style="height:10px"></div>${tgtHTML(r)}<button class="p w" style="margin-top:14px" data-a="cfstart">Start 8-week plan</button></div>`}
+ else if(c.show)pv='<div class="mut" style="margin-top:10px;color:var(--wr)">Fill in age, height, weight and average steps first.</div>';
+ return `<p class="mut">Start a plan on any day. Enter your details once and it works out your daily macros and step target.</p><div class="card">${f('age','Age','35')}${f('height','Height (cm)','170')}${f('weight','Starting weight (kg)','85.7')}${f('steps','Average steps a day','3000')}
+ <div class="mut" style="margin:12px 0 4px">Gender</div><div class="chips" style="margin-top:0"><button class="${c.gender==='M'?'on':''}" data-a="cfg" data-v="M">Male</button><button class="${c.gender==='F'?'on':''}" data-a="cfg" data-v="F">Female</button></div>
+ ${f('start','Start date','','date')}
+ <div class="mut" style="margin:14px 0 0">Starting measurements in cm (optional)</div><div class="grid">${['chest','waist','hips','arms'].map(k=>`<div>${f('m_'+k,k[0].toUpperCase()+k.slice(1),'cm')}</div>`).join('')}</div>
+ <button class="p w" style="margin-top:14px" data-a="cfcalc">Calculate my targets</button></div>${pv}`}
+async function startCut(){const c=CF,t=cutCalc({age:+c.age,height:+c.height,weight:+c.weight,gender:c.gender,steps:+c.steps});
+ const row={id:uid(),start_date:c.start,age:+c.age,height:+c.height,gender:c.gender,start_weight:+c.weight,avg_steps:+c.steps,...t,active:true};
+ const r=await sb.from('cut_plans').insert(row);if(r.error)return alert('Could not start the plan. Run the latest SQL in Supabase first. '+r.error.message);
+ const meas={};const m={plan_id:row.id,week:0};['chest','waist','hips','arms'].forEach(k=>{if(c['m_'+k])m[k]=+c['m_'+k]});
+ if(Object.keys(m).length>2){const mr=await sb.from('cut_measures').insert(m);if(!mr.error)meas[0]=m}
+ S.cut={plan:row,logs:{},meas};CL=null;CF.show=false;render()}
+function initCL(day){const e=S.cut.logs[day]||{};CL={day,ref:!!e.refeed,v:{protein:e.protein??'',carbs:e.carbs??'',fats:e.fats??'',weight:e.weight??'',steps:e.steps??'',cardio:e.cardio??'',training:e.training??''}}}
+function cutLive(){const p=S.cut.plan,v=CL.v,k=Math.round((+v.protein||0)*4+(+v.carbs||0)*4+(+v.fats||0)*9),t=CL.ref?p.refeed_kcal:p.kcal,el=$('#clk');if(el)el.textContent='Calories: '+k.toLocaleString()+' of '+t.toLocaleString()+' · '+(t>=k?(t-k).toLocaleString()+' remaining':(k-t).toLocaleString()+' over')}
+const cutMsg=m=>{CUTMSG=m;setTimeout(()=>{CUTMSG='';if(tab==='cut')render()},3000)};
+async function saveDay(){const p=S.cut.plan,v=CL.v,n=x=>x===''||x==null?null:+x;
+ const row={plan_id:p.id,day:CL.day,protein:n(v.protein),carbs:n(v.carbs),fats:n(v.fats),weight:n(v.weight),steps:n(v.steps),training:v.training||null,cardio:n(v.cardio),refeed:!!CL.ref};
+ row.kcal=(row.protein||0)*4+(row.carbs||0)*4+(row.fats||0)*9;
+ const r=await sb.from('cut_logs').upsert(row,{onConflict:'plan_id,day'});if(r.error)return alert('Could not save: '+r.error.message);
+ S.cut.logs[CL.day]={...(S.cut.logs[CL.day]||{}),...row};cutMsg('Day saved');render()}
+async function saveMeas(){const p=S.cut.plan,row={plan_id:p.id,week:CM};['chest','waist','hips','arms'].forEach(k=>{row[k]=CMV[k]===''||CMV[k]==null?null:+CMV[k]});
+ const r=await sb.from('cut_measures').upsert(row,{onConflict:'plan_id,week'});if(r.error)return alert('Could not save: '+r.error.message);S.cut.meas[CM]=row;cutMsg('Measurements saved');render()}
+async function saveTargets(){const p=S.cut.plan,g=id=>+$('#'+id).value,u={protein:g('ctp'),carbs:g('ctc'),fats:g('ctf'),refeed_carbs:g('ctr'),step_target:g('cts')};
+ u.kcal=u.protein*4+u.carbs*4+u.fats*9;u.refeed_kcal=u.protein*4+u.refeed_carbs*4+u.fats*9;
+ const r=await sb.from('cut_plans').update(u).eq('id',p.id);if(r.error)return alert('Could not save: '+r.error.message);Object.assign(p,u);CTE=false;cutMsg('Targets updated');render()}
+async function endCut(){if(!confirm('End this plan? Your logs stay saved, and you can start a new plan.'))return;const r=await sb.from('cut_plans').update({active:false}).eq('id',S.cut.plan.id);if(r.error)return alert('Could not end plan: '+r.error.message);S.cut=null;CL=null;CF={gender:'M',start:dstr(Date.now()),show:false};render()}
+function weekStats(p){const out=[];for(let w=1;w<=8;w++){const rows=[];for(let d=0;d<7;d++){const l=S.cut.logs[addDays(p.start_date,(w-1)*7+d)];if(l)rows.push(l)}
+ const avg=k=>{const a=rows.map(r=>r[k]).filter(x=>x!=null&&x!=='');return a.length?a.reduce((s,x)=>s+ +x,0)/a.length:null};
+ out.push({w,n:rows.length,weight:avg('weight'),kcal:avg('kcal'),protein:avg('protein'),steps:avg('steps')})}return out}
+function cutChart(kind){const p=S.cut.plan,pts=[];for(let i=1;i<=56;i++){const l=S.cut.logs[addDays(p.start_date,i-1)];if(l)pts.push({i,l})}
+ const W=320,H=170,P=34,X=i=>P+(i-1)/55*(W-P-8),none='<div class="mut">Nothing logged yet.</div>';
+ const ax=(mn,mx,f)=>`<text x="2" y="${H-P+4}" font-size="11" fill="var(--mut)">${f(mn)}</text><text x="2" y="16" font-size="11" fill="var(--mut)">${f(mx)}</text><text x="${P}" y="${H-6}" font-size="11" fill="var(--mut)">Day 1</text><text x="${X(56)}" y="${H-6}" font-size="11" text-anchor="end" fill="var(--mut)">Day 56</text>`;
+ if(kind==='w'){const d=pts.filter(q=>q.l.weight!=null).map(q=>({i:q.i,y:+q.l.weight}));if(!d.length)return none;
+  const av=d.map(q=>{const w=d.filter(r=>r.i<=q.i&&r.i>q.i-7);return{i:q.i,y:w.reduce((s,r)=>s+r.y,0)/w.length}}),ys=d.map(q=>q.y),mn=Math.min(...ys)-.5,mx=Math.max(...ys)+.5,Y=v=>H-P-(v-mn)/(mx-mn)*(H-P-18);
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Weight chart"><path d="${av.map((q,k)=>(k?'L':'M')+X(q.i).toFixed(1)+' '+Y(q.y).toFixed(1)).join('')}" fill="none" stroke="var(--ac)" stroke-width="2.5"/>${d.map(q=>`<circle cx="${X(q.i).toFixed(1)}" cy="${Y(q.y).toFixed(1)}" r="3" fill="var(--mut)"/>`).join('')}${ax(mn,mx,v=>v.toFixed(1))}</svg><div class="mut">Dots are daily weights, the line is the 7-day average.</div>`}
+ const key=kind==='k'?'kcal':'steps',tg=kind==='k'?p.kcal:p.step_target,d=pts.filter(q=>q.l[key]!=null&&+q.l[key]>0).map(q=>({i:q.i,y:+q.l[key]}));if(!d.length)return none;
+ const mx=Math.max(tg,...d.map(q=>q.y))*1.1,Y=v=>H-P-v/mx*(H-P-18),bw=Math.max(2,(W-P-8)/56*.7);
+ return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${kind==='k'?'Calories':'Steps'} chart">${d.map(q=>`<rect x="${(X(q.i)-bw/2).toFixed(1)}" y="${Y(q.y).toFixed(1)}" width="${bw.toFixed(1)}" height="${(H-P-Y(q.y)).toFixed(1)}" fill="var(--ac)"/>`).join('')}<line x1="${P}" x2="${W-8}" y1="${Y(tg).toFixed(1)}" y2="${Y(tg).toFixed(1)}" stroke="var(--mut)" stroke-dasharray="4 4"/>${ax(0,mx,v=>Math.round(v).toLocaleString())}</svg><div class="mut">Dashed line is your daily target.</div>`}
+function viewCut(){const hd='<h1>Fat loss</h1>';
+ if(!S.cut)return (S.cutErr?`<h1>Fat loss</h1><div class="card tip" style="margin-top:12px">Run the latest SQL in Supabase to switch this on.<br><span class="mut">${esc(S.cutErr)}</span></div>`:hd)+cutSetup();
+ const I=cutInfo(),p=I.p;if(!CL)initCL(I.t);
+ const n=k=>`<div><div class="mut" style="margin:10px 0 4px">${k[1]}</div><input data-f="cl" data-k="${k[0]}" inputmode="${k[0]==='training'?'text':'decimal'}" placeholder="${k[2]??''}" value="${esc(CL.v[k[0]])}"></div>`;
+ const tc=CL.ref?p.refeed_carbs:p.carbs,m=S.cut.meas[CM]||{};
+ const ws=weekStats(p).filter(w=>w.n);let pw=null;
+ const wk=ws.map(w=>{const dl=pw!=null&&w.weight!=null?w.weight-pw:null;if(w.weight!=null)pw=w.weight;return `<div class="card"><div class="row sp"><h3>Week ${w.w}</h3><span class="mut">${w.n} day${w.n>1?'s':''} logged</span></div><div class="mut" style="margin-top:6px">Weight ${w.weight!=null?w.weight.toFixed(1)+' kg'+(dl!=null?' ('+(dl>0?'+':'')+dl.toFixed(1)+')':''):'–'} · ${w.kcal!=null?Math.round(w.kcal).toLocaleString()+' kcal':'–'} · P ${w.protein!=null?Math.round(w.protein)+' g':'–'} · ${w.steps!=null?Math.round(w.steps).toLocaleString()+' steps':'–'}</div></div>`}).join('');
+ return `${hd}<div class="mut">${cutStatus(I)}</div>${CUTMSG?`<div class="card tip" style="text-align:center">✓ ${CUTMSG}</div>`:''}
+ <div class="card"><div class="row sp"><h3>Your targets</h3><button data-a="cte">${CTE?'Cancel':'Edit'}</button></div><div style="height:10px"></div>${CTE?`<div class="grid">${[['ctp','Protein (g)',p.protein],['ctc','Carbs (g)',p.carbs],['ctf','Fats (g)',p.fats],['ctr','Refeed carbs (g)',p.refeed_carbs],['cts','Step target',p.step_target]].map(x=>`<div><div class="mut" style="margin-bottom:4px">${x[1]}</div><input id="${x[0]}" inputmode="decimal" value="${x[2]}"></div>`).join('')}</div><button class="p w" style="margin-top:12px" data-a="ctsave">Save targets</button>`:tgtHTML(p)}</div>
+ <div class="card"><h3>Log a day</h3><input type="date" data-f="cld" value="${CL.day}" style="margin-top:10px"><div class="mut" style="margin-top:6px">${dIdx(p,CL.day)>=1&&dIdx(p,CL.day)<=56?'Day '+dIdx(p,CL.day)+' · Week '+Math.ceil(dIdx(p,CL.day)/7):'Outside the 8 weeks'}</div>
+ <div class="chips"><button class="${CL.ref?'on':''}" data-a="clref">Refeed day</button></div>
+ <div class="grid">${n(['protein','Protein (g)',p.protein])}${n(['carbs','Carbs (g)',tc])}${n(['fats','Fats (g)',p.fats])}${n(['weight','Weight (kg)',''])}${n(['steps','Steps',p.step_target])}${n(['cardio','Cardio (mins)',''])}</div>${n(['training','Training (which workout)','e.g. Push'])}
+ <div id="clk" class="tip"></div><button class="p w" style="margin-top:12px" data-a="clsave">Save day</button></div>
+ ${wk?`<h2>Weekly summary</h2>${wk}`:''}
+ <div class="card"><h3>Measurements</h3><div class="chips">${[[0,'Start'],[2,'Week 2'],[4,'Week 4'],[6,'Week 6'],[8,'Week 8']].map(x=>`<button class="${CM===x[0]?'on':''}" data-a="cm" data-w="${x[0]}">${x[1]}</button>`).join('')}</div><div class="grid">${['chest','waist','hips','arms'].map(k=>`<div><div class="mut" style="margin-bottom:4px">${k[0].toUpperCase()+k.slice(1)} (cm)</div><input data-f="cmv" data-k="${k}" inputmode="decimal" value="${CMV[k]??''}"></div>`).join('')}</div><button class="p w" style="margin-top:12px" data-a="cmsave">Save measurements</button></div>
+ <h2>Progress</h2><div class="card"><h3>Weight</h3>${cutChart('w')}</div><div class="card"><h3>Calories</h3>${cutChart('k')}</div><div class="card"><h3>Steps</h3>${cutChart('s')}</div>
+ <button class="d w" data-a="cend">End this plan</button>`}
 function render(){if(!S.active&&rend)rtStop();
- $('#v').innerHTML=!READY?'<p class="mut">Loading…</p>':!ME?viewAuth():tab==='train'?(S.active?viewLog():viewHome()):tab==='plans'?viewPlans():tab==='board'?viewBoard():viewProg();
+ $('#v').innerHTML=!READY?'<p class="mut">Loading…</p>':!ME?viewAuth():tab==='train'?(S.active?viewLog():viewHome()):tab==='plans'?viewPlans():tab==='board'?viewBoard():tab==='cut'?viewCut():viewProg();
  if($('#ae'))$('#ae').value=AUTH.e||'';
- $('nav').hidden=!ME;document.body.classList.toggle('lgn',READY&&!ME);$('#hm').hidden=!(ME&&S.active&&tab==='train');
+ if(tab==='cut'&&S.cut&&CL)cutLive();
+ $('nav').hidden=!ME;document.body.classList.toggle('lgn',READY&&!ME);$('#hm').hidden=!(ME&&(tab!=='train'||S.active));$('#hm').setAttribute('aria-label',tab==='train'?'Leave workout':'Back to home');
  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===tab))}
 const P=id=>S.plans.find(p=>p.id===id);
 document.addEventListener('click',e=>{
@@ -398,6 +479,17 @@ document.addEventListener('click',e=>{
  else if(a==='wadd'){const v=$('#wa').value.trim();if(!v)return;S.active.ex.push(newEx(v,false));save();render()}
  else if(a==='setbw')setBW($('#bwin').value);
  else if(a==='setbwp')setBW($('#bwp').value);
+ else if(a==='opencut'){tab='cut';CL=null;CMV=Object.assign({},(S.cut&&S.cut.meas[CM])||{});render();window.scrollTo(0,0)}
+ else if(a==='cfg'){CF.gender=D.v;render()}
+ else if(a==='cfcalc'){CF.show=true;render()}
+ else if(a==='cfstart')startCut();
+ else if(a==='clref'){CL.ref=!CL.ref;render()}
+ else if(a==='clsave')saveDay();
+ else if(a==='cm'){CM=+D.w;CMV=Object.assign({},S.cut.meas[CM]||{});render()}
+ else if(a==='cmsave')saveMeas();
+ else if(a==='cte'){CTE=!CTE;render()}
+ else if(a==='ctsave')saveTargets();
+ else if(a==='cend')endCut();
  else if(a==='ar'){const n=S.active.ex[i].name;AR[n]=!AR[n];render()}
  else if(a==='demo')enterDemo();
  else if(a==='sumok'){SUM=null;render()}
@@ -417,6 +509,10 @@ document.addEventListener('click',e=>{
 document.addEventListener('input',e=>{const t=e.target,D=t.dataset;
  if(D.f==='w'||D.f==='r'){const x=S.active.ex[+D.i].sets[+D.j];x[D.f]=t.value;x.t=true;save()}
  else if(D.f==='dt'){const d=new Date(t.value+'T12:00:00');if(!isNaN(d)){S.active.date=d.getTime();save()}}
+ else if(D.f==='cf'){CF[D.k]=t.value}
+ else if(D.f==='cl'){CL.v[D.k]=t.value;cutLive()}
+ else if(D.f==='cld'){if(t.value){initCL(t.value);render()}}
+ else if(D.f==='cmv'){CMV[D.k]=t.value}
  else if(D.f==='note'){S.active.ex[+D.i].note=t.value;save()}
  else if(D.f==='pn'){P(D.p).name=t.value;save()}});
 document.addEventListener('change',e=>{const D=e.target.dataset;if(D.f==='pe'){pe=e.target.value;render()}else if(D.f==='xrest'){const n=D.n;S.xs[n]=S.xs[n]||{};S.xs[n].rest=e.target.value?+e.target.value:null;saveXS(n)}});
@@ -426,7 +522,7 @@ const isDark=()=>TH!=='light';
 function applyTheme(){document.documentElement.dataset.theme=isDark()?'dark':'light';document.querySelector('meta[name=theme-color]').content=isDark()?'#21201F':'#E5DBCF';$('#tm').innerHTML=isDark()?ICON.sun:ICON.moon}
 $('#tm').onclick=()=>{TH=isDark()?'light':'dark';try{localStorage.setItem('gymbros.theme',TH)}catch(e){}applyTheme();render()};
 applyTheme();
-$('#hm').onclick=()=>{const a=S.active;if(!a)return;const any=a.ex.some(e=>e.sets.some(x=>x.d||x.t));if(any&&!confirm('Leave this workout? What you entered will be lost.'))return;S.active=null;save();render()};
+$('#hm').onclick=()=>{if(tab!=='train'){tab='train';render();window.scrollTo(0,0);return}const a=S.active;if(!a)return;const any=a.ex.some(e=>e.sets.some(x=>x.d||x.t));if(any&&!confirm('Leave this workout? What you entered will be lost.'))return;S.active=null;save();render()};
 sb.auth.onAuthStateChange((ev,sess)=>{if(ev==='TOKEN_REFRESHED'||ev==='USER_UPDATED')return;if(ev==='SIGNED_IN'&&ME&&sess&&ME.id===sess.user.id)return;setTimeout(()=>boot(sess),0)});
 render();
 </script>
