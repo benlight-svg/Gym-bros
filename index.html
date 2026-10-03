@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAMAAAAKE/YAAAAAYFBMVEXy6dvr4tTm3dDk287h2MvSyr7rlEXjj0PfjUO1rqSwknTKhknDfT60dTumbTmVYzV4bF95WTplTTZPPCo5NTArKCQjIyIiIiAhISAhIB8gIB8fIB8dHR0YGhwVFxcQERJTT5GiAAAU1UlEQVR42u1cC3ucuLLkDeKNHsCAJP7/vzxVYpxkz71JGHsmu/udYR3b2dhDqdVdXa2hO9r+hVf0Bv0G/Qb9Bv0G/Qb9Bv0G/Qb9Bv0G/Qb9Bv0G/Qb9Bv0G/Qb9Bv2/CXrFx4JrDZ/5dV3/maCBcOa1rJvdFuu8984dPnyx1u4Afv7z+s8AHWBYwDsOoLSb2bzRWkutR6kUvtPGrM7b8M8OSwL2Zf2bQN9uAfJi8XnXSspxrIUQeY4/aRwJresoSpI0zXJcohbjOCptLBYH7Ov8h0HTFdZt3zdsufUaX62u8yhcMS58ysbD2kOJNE2yHP9DSDPyHzMsqR6lNs7v4bU+Z/NHQa/zAmN5t8/z5vxha+GXbXWHGUUWZ1mWwrRJrg8syxwmT5I8y2p9wD20iNMES8IF7LWxwLvQ5vP6WtDLbA9v5Bj8AHceRZTvYSnwai0iWjZN0kQYP89e53GaRViBm5dt9rZOuCQuDNglFrs4rRG0AP6YxaOHrBwsmgdrRVmcYOPTXNNkdBXnRzhADHumQIpF5FGWRcS/nJ5w1FGWZHVw9Kg+uKwsE/AWEI1dHjD4A6BhZfguEcfw1FxkCSItS7Vf7tuwHDKP8jxOUphYKrhLEtXefsTc7ANomcO1s1jYxc74FivPAdz4w63z8mzQ82HqFCgZSuQx0BqsHkWjJwXfYRmRiTjOR6BJCWg81m9AFi8AOp/xOUuSTFsuIguRGsUAToNvl+wdXU4fx5gDcpIoz0C01iEOvRnz8cA3x8dmuBo8l+cMR1haHj+AWJ2A9+THGMGB0mg8RiwrjblArBD+Btz2sOvTQK+bx70QZBkCaEHchAy4O6QMbWDyWrpws2U7RroFrjyQyA/Evs8ig1scGpGYpVFtEkRlNEqYP0QovC3KR30B9VXQ2MoUewr7zPTelUnCGsWEAgDRaL8F6yGBAT+a/RUz2NyA/hCAqzhjVZBbRIjOJDAK6Uia/VmWnrGntEeSBXpFPgbv1YFH4jghq63fKcYiDPmz+bz/BbTTeZ4gBOjKaYxwAFCwDJeAH4+FNsyW9lk+vXgZpwQSB1a2iMAkpD9EEXd89t/QgUJURkvDeqN38w8Uf6hU5HAvvhiTDl9PwlnCT3MP6XPL09gDIURDE/QWpIaElaM4hD4wu2+stpGsM3oo/TUR+jgFFSA7psQ8z7RfDbciPoEyVLjCJNVueSZPL17FIdUFogIK8oZmWgzOKb7beT2MAHsgW2dYZhyloz3jypPi0xCIUK6C/AHM+M3Tpekd9rkZ8e7R902cb0Ey7YfPmdqQZn6ItTED9Z66Lmemz0RY5a4EmYGKDymSL5dy24ydLRbO5M8M+SLQKWlsh9KnqXk75sczOElq1iAnBwWNaw9lAcQoMM9jHXQrM2mUGx3npHHpHTVVFqJF+uWpoKFrkvTueXEujd2NpqgjS42jSNW3++3HvVbBBfG6IwWFXd+DikYWlUFsKSRSytcNsSEgYU6rP1l7LIGl7qgjynyQR5DJM8DoH+73URWu6w1lwvf6kLywWhY4EHU6BLKAl2ek+Uw86B3XQN92W1MlUVUilrDFCdRCrayHD6zuso1Y64LUTgFAvZjXNV0GbiZm+1z3wN12LwM13+sT6rL58GuQwQ9XqyyDF5j9cBoZKguqMRJuW58LGjby4Q646npUBoJsn5ftCxeRo+IJwFmRMb8/XU8vvEPwSebaR2uNn5ebqNSPRdFVxmN5NugQTDOdcn4O4O9iZd7JoEaM/ulFwCsv+LizTv/rzvLAjvZfB/rjsOp9avq/Dvo8Bvy7QIMAb+uDZ6DrDUJq/drB6ZdAOyg6/HEPALihKlhm/JZdPo/8c6BXSrnFTn3Xdn2vrhdKi1Nt11b9NBiu1663PwZ6gVDeUe0WRVHhv2G//qu77KuuKspiMFpBw+y3PwR6cUbxasumaYuyg6C+XTa0mdpu6vu2qbDi9pH1fgk07jxMsu+7vqqqti8Gfdk/8Kv7VEk1wNj4zaotpFv+EOiu6FvYqS9KeGc1LZfvvFppVFM1Usqhaku4VrvfHvfrh0HvuzNlCVeumqGgd1aTVFdrl5uVg6qUlnqWZdsPzdAot9tHWeThty+MsbJpSqJtKzUpVfXdA+4xdUOjZyUREd00TVoOqHedXV8J2kru7NAq2VTVIOWkTDW08jpo/HCDlcpl7jtjpFraCrRp7MvevsA9ZdW2TS/l4nXTTKZr1VqpfroM2g+96owzcppUb8EldigahIhfXgX6tq9t0RbN0A9OI566WfV6bsww+Mug+2Eupnnv1SQH43UP8uvbqX3M1A+9UeT0MJih6OXkZFeWwzrpQ01uugz65lppy8mYqS9kD84GYw9q0uox5oseI+he7Qq+PM1Wt8UwdUpPi3/glhZBW/VymKay6eTENNPNRmr5Mksj9gs5FFVXIBAncF4ri0ZqLOUi6Js1jXbN4GHirmrlYZBVexBKJ+f9Ve5hp6JDHmyrVnsEkIJjOiXhmRfttFpTad81fY+AaDq81tQhQrD8aXkV6H2BP6yqGEAffVdV8MdpqCavu+tBURnfQ2eVDUKiYpJqJjB+MbzKPW6bGSo5NSXEZVGciqfoO2x2d3FzF6cb44e2IlwkJ+xawI6Xsa8KRL/AutQ52NsG9FqWTdu2EqAvyjxEcmPc0DTACtj8DCM3EKqVcS8BvSP5VvTntirbU99VlDyDn69mNJYAs6NpCbptTtB4yapU+oFQjK5HoUHItKC5jrdERHYA3TbIZrbT7jLo3XOriBZOFjwDIdkWyJBufQFoZBY4RtfSzFXZDbx5C0vNuv2umO6F7n5e55H0N+1J0GYGafIFirY7QSNASgiQ6bnvbn2E/mFRpxTcT7hzNwwFd7gYVN8qPwe4y42FLkqxZZ4NTyq3UPja/UbsBA2Wm7hYhPF30FVVQN8+GzTuuEAKTx3DZ+q4v52ixXjTqa/k5qCz+bwJCjHIzkWrbxcfvzKWD13tzk5wMO4Qf/EEXZ1eorQKz8Q9D/QtHBUMXT8w/vqGLPsBuqxQOzWNXFCoogYbhqFT5htiYxS0LITzIJWZFVwL6a+jexD0iT2Ahlw1HptyexZoFEkSeRuCAYZq4dmgrAKyoQh028OWrkdYAU6vDj9Mauh5AX9PuOpwO7RoD5CF0v0kWwgAgm7voPFiPfSM5Id92vMe+zQMU9vAyBV0DizNe03y5NlOAixEj4RV1RRu/uM1ELxEfQWPmWDdcprAcQPxnr9PS3dDiyzF/biUzqNr6Rv5ukUVi3KFpWwH2G0IKNy4wTcQfDBeJyFYhzvY6bwAGhof1i3DiQHdox+gyu9cTdgtl4K4hmWGa7x37c1PbPQwmVUxdnrUswTdwz2Y2opqGkrQFjK7QoxSbU/THTU/D3QUYG9YNUCqDFhzEYx8Yq4aOkrLl2F1sTzNpxE8uDcVO+qWkMHgw7BtgZv28GTZdidPoH6k6w+nlSkD+YX+MYHgJ0U/m8CU9InqjprAiwmBziM290SfDo4KIiB7dEhhME7fBq+EuxTKNZUkV3jvd6SJiTuNImcJ6BGkkyyDutJ720vW72X14R2EDRYcQjwM8mmWhviHaeB1fQefRDT2MDWIjnxX8ZiIVEi9CQ7QqgvWJG5EKHlkgP1Vyx9oKvL0hPQ0ffNoBEXR9iEUUX9dU17X3GMC1N4cBreALm0GBN7d0CVFE9MilgQhAlyoSFQgAjkpqYMBQYdNT1pDSMDszODfTU3YbdmS1fUTQW8hGXuURZTACEB6HxLZh0PCxyfDbL3xMQNyXIWyhIxDN4EjhcyCHzDI+FUQ0SdkwA3fS4Rmb5y1+/7ENM4Ma2GKSnXBJxoqHFR5LXl6ajvpdqbgPSzOzYbHuEyFwXp8Bhw5HK+xeWoPWXwUASXJE6wB/yk6vb9AMG2I/UrBLSrZkz16L0NK7EgdZ/zczkfqd2uDTjqvIJbO07rFyXbQUzGhngXoPrhHG7ikHLR9wXvjrmNpB2pGNKIg7zp4aLCX/lGa3vXpvSGAD3/c/npChcqlAEUG3rnTXSglrL1+ePqYnoZqAGBQFBPdnWWrxbX6cuWCvQqgJZM34rahLiWFD+Y66uvucbPeDkGdQUEj2mCnhn7Jk4SLOxtAo/7Brk0APXQhwTCSO/3I8/aPPIVgdYfYh1SgBoHA7CF9KnCunPbtMmjIvWqa4GYQBO2ZU6umnx46zHsANPQluAss3VETw7MnJmYkDHn1gDqAVn0TSuMCtF6GcqDs2kec4xHQfKsFCYJHTD0lNVyxrLTsQFnXQetKeQrcU5OSeyom+Kp90QkTQUuo56btgoVwp4k1aSllexE0KvpuMt09kxJ0Q8GL/zG87tTUy7IPbs2sgt2dFCotcslFjwTovlP3GjEoaqp0isbJv+6oV1c9hD6QMiVA6CjdNU3fXAV922fw3XnuUbLQpBzvmFZfdz6NezbYTHhFGcxUUd7xSGG4HPt7V6iuOLUSqgKeH+DVykK9DHQ4oEblTaZrz7KWlSk4+2rsg6DLIF9CXupYW0JOwafnh95ufgj0bVuHpoU/8Njw4wixhPa7es/F9aVq78VWA+lqTFN0QzG5l71RFJ7fVFohNUxnCUA/aYeys5dDGVL8bmdk1qE3ErVjL+1DKB59H/F2c9arVrsgioP0KFF2XH9LbmIhftfS0KOHRghePKL5NGiekDnVSN2xRjnPxVAoXX5LzsmiKT9AozDnQc9tefQ9/c+09lkiZkndBeXQltMDTyFU3cl4FbkHsmXZHn/i41NPIeiGtXXBdBZQ66tvPqw8Nr2DRjLFK6g/9OgEH1LhO4HhJPEEffk8fDfMJecBNxhvUO4zjzF97nEglH3OHXxfKpzmPfAME+jjvAbP7i/3Rzo/vxe6y2ZQabdV2z2wxeFNkHCkOu98XOxzj2B/4RG3m0UNPpv5oac1UP/c690vPJj3lefybsu272wKf3iT+EbH9veAPgvvrz6D+XTQ6/aPvH4N2m1f61b4ZJR/CfSubWjX/aMeMFu/fwE0yqvQ9urtvK5/wMBL6IL1pla/0TK/tPTCJt7Qh+Ps8tyei/8jw8KsCrYaKXH2xH7ap5ejjjjAoNbmbEh/CfB1ZmcU+4vVONZxnorfMP/v2MPVbNfEH/bsslvs6cDX2R67Vuz7q0cRx1n6QwP9p3h6sTNeJ05EHXPswqgMm8afySmrPdgnmEdplI0jOwbj7Hf+8bvkwn7SPI9zAQskMTs6R8nYvB84f9nq62bGjE1seV2P2izsWByF8L8cABL9VuDkbPFN8xh7J8LohoSt9D5IaLrL2R11gV7Wc4hK+LJ+S6iM9RTOp9lNenh/zFrJUbtfOchvQM9+5NQOjgGQR+hizuIM0NPauGVfpJo/5r7YbbnPrVn+v9E6SxgHEhpDQ8faqe9gE5FnmVj5GuydD/4RJXkiRr9+GvRRA3Qew7qzW84WwpgNfpEwFhXfORqFnbV8OuI4zgU4919+M2/+sJw+IEJzYIjpbTm7d/MxFzoMj8kTxE3OMSZ5Eke/aD/7Deh9ZstyzJ5SbqC3iBs2KWdJLMiInOERGmaJnvCxAPYG8yeX75APG/aIc1QyNk3GeS1XxMXiRTbLOA79rxHBshcdwcMb/JxCot94h0yyhCgRjMA96oWzRnKOSGH/8exnEWEJvEf80RbKvlAOYvgoDWa/gcqiOMG250lo2k6wAKH8vjiRGxFlAjxHqotyekvGXudfUcjPQXOczh6arwEwz3BTDhPhLJKEN0hiJtvZujDLg14fgOMjiUc9gmZOS63bIXOiwH6F/mw2+4exAnltVz9Gov5oSuegE9yCoU6e+gToMFZCy5wjPWjtEVuIXQOL0gow2ulzi+U0ncAvkp45svm0FjX3hm8frfsyJmwT54AS7+BhW30OJQG62lsNOs3uV57SnUXNyRBC5D8vl38G2oaxEjBemCfAkRYcNCE4uiVmdkQorXdRFaUnaBOkg6ef1yNbngXZ3BEjAjnmkJo1dBMJDiMJYxSkc7pOorBB935j7Y5DIJOLXySY6Gf8jB3m8KcsdLlz7onZID9mjgCid9v7S87HOYEBm086W+2+H3BzzpASwiHSaooA2vFjQAPiJDp3j26765GsggsBM5N9NllzJMWvelejn2dXr8eaoZ4S+AhC9kjfzsNOcPD8zqOBtDjIIctBHIoTusYsQM7i0RNgnIToEvt3e2Qx444t7n4zmZC347z8bsAyEZuE5S9o+uc+vbLPGPbm5BHmE3GO8PGwI6QImPs0BYg8jOrIUkH2E3RVLgq/MKJ+OKcYcavEh4eeE1U+ZnrMXoDrYGZ+IC9yl5J63P1n03ho7A6zojJkk+icz1KDobHlaX4GyuKDh5JpY2qqOEStCGl5PQcCcT4DXOTjWVJYGrEiyJqJdvfhEBn4MIQ3I0b6Y/uKYArjw+Aoi2Z6jU7pMY5xmqdhZtU674I48VcR8h1HDwC0UOG+3If7EIUffZqRcro0CpWRSYUhn4+nHPN+nm9fPELgDAC377s+h9TAC5QEkEisG1Z0GLgDqCrJJYXFqjlIhVxQ25NbsAjmuSyrD0pxoFxFHmatwKP5JCc8PKnD00azmU/F/pxzDyogF3ibdC0ymLs2dge9jfirqSHUsjFQmudsl5SDP4LPh8ExzCxY10gpjl9Busc64nT0yDyrnfNchs5/v7PBcnneHKbTU8LclxnIoS8OezNSkEfqkTjvc3VOH00RS0IimFZr6+gc9pKw2gx6X3DCl9DHHR9K0Plj8uIrTpjoKntIIRY+MwqO+wClavp1mgvDuTo2DAxjbgSFrVACEowYh4yHXMnRGIhpUMu3yUF+f3Ti3+PHYmHQBY10s86EzG11zbEuKBTGZaep4Q6gGRD34rBB3kuk9hTZ+agzBgaqNud/mDn24nl5/10q2WD11WgkFWS0Gply3aHrKVPDaEXKj2X14E14Rq1GCkVK3D8+TvG/rM4nuzmbhtMHOYRn28EqzIx8/srcTzUoxZFRUZ8dHEb4xbr4WSNCOQN0PSfQYQP46NX56fvxEZ8W25annEC8pEN//Xb9Haem/9DrDfoN+g36DfoN+g36DfoN+g36DfoN+g36DfoN+g36DfoN+g36Dfrfcf0H9+d9LtLVquAAAAAASUVORK5CYII=">
 <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwBAMAAAClLOS0AAAAMFBMVEXVzcHBj2Cxczp2a19aSTg2MCkjIyEhIR8hIB8gICAgIB8fIB8eHh0aHB0XGBgRERF2mgXvAAACoUlEQVR42s2UX0hTYRjGn+/sSJl/dpbCkrJzdKsLQT05CxJJaYOCsMgwDfpzU4Td5EXZokCvSiNkWIlJN1E3WoSFlEROy1JjW02tMEo9aTYNnWfOtHTnfF24f0H39V19Hz9enud93pePtODvh8E/BGz4FuhiA4Qmi38Cp8yeOLQ8wWPY8dwcBQLlglIqMYk+GEobyo1CCCixZ+x+OT4mbvNSc8Llp5+kkPg7Y6sp+9T48o8+gXM6kuvdIeA/kk9dw3PYXiGJ/SLRikGglLl7E9FaZ1qolGTWvUcb6kPTLi69KKle7+xr6DHuwKwMAKQFAPJP5xWNTHcRc/8B/kn99bA4LtV4iMxazMjWnl/zUIpUUHuldZMIAPdqG+cLI1mpZ092+CRAjXdZSrmoECesw9ycDFBeA2tRdFbeLXMAAMqTUX8UyHjsZvSKC3SjKkWnq/CSzDAHOczGjsrctUwxXDEKqFM1ALSArIYrVP4igM8CA0kFyMc0SQi6omPgAIxABQFAhaBdZqwQgDEpXWfaCXAZ2oirCjugrwboT7tOToyy6wM4+QoHepTKhM8OA007KEGSCAUg3OHBSCRZxZhd6UtmDL5IVu7A7jRwAEDANT5SAEBTAhBLs8f2Yf86gJlevH3Tu6APgg22W3F1VR4AUI41Ld5I+R4U7xnclnF1TOmExblryn9hq/qqbWWCLwe6s+JSrOl0KKVh0mZhlNRMESwAIoP2Fpl0hryJB3ToLfC+qRssMPDVnYy1dxJyOohj35c34njqNzfAAFnFZh5eFTOaZxAEAkHT070ivur+wt6cAhj7j+PuTEGMrva1GJzHuVUOWmb4leNpszGtk97G3PBeKZ2kklmtn+otVKricxFZOAAuOh9g87uIOfgm/+XP8Bt3EP3qhYxEoAAAAABJRU5ErkJggg==">
@@ -99,11 +101,14 @@ h1,h2,h3,.big{letter-spacing:.07em}
 button{letter-spacing:.09em}
 .hb.up{color:var(--ac);border-color:var(--ac)}
 .card input[type=date]{min-height:44px}
+.set.wu{grid-template-columns:28px 1fr 1fr 48px 40px}.set.wu b{color:var(--ac)}.set.wu button.d{padding:10px 0}
+#offb{font-size:12px;padding:8px 14px 0;color:var(--ac)}
 </style>
 </head>
 <body>
 <button id="hm" aria-label="Leave workout" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></button>
 <button id="tm" aria-label="Switch between light and dark mode"></button>
+<div id="offb" hidden></div>
 <main id="v"></main>
 <div id="rt" hidden></div>
 <nav><button data-t="train">Train</button><button data-t="plans">Plans</button><button data-t="prog">Progress</button><button data-t="board">Board</button></nav>
@@ -127,30 +132,20 @@ const fail=e=>alert('Could not save: '+e.message);
 async function ins(t,rows,opt){let r=await sb.from(t).insert(rows);if(r.error&&/column|schema cache/i.test(r.error.message)){r=await sb.from(t).insert(rows.map(x=>{const y={...x};opt.forEach(k=>delete y[k]);return y}))}return r}
 const lsk=()=>'gymbros.local.'+ME.id;
 const save=()=>{if(!ME)return;try{localStorage.setItem(lsk(),JSON.stringify({active:S.active,rest:S.rest}))}catch(e){}
- const g=JSON.stringify(S.plans);if(g!==PS){PS=g;clearTimeout(pt);pt=setTimeout(syncPlans,800)}};
-async function syncPlans(){const u=ME.id;
- let r=await sb.from('plans').delete().eq('user_id',u);if(r.error)return fail(r.error);
- const P=S.plans.map((p,i)=>({id:p.id,name:p.name,pos:i}));
- const E=S.plans.flatMap(p=>p.ex.map((n,i)=>({plan_id:p.id,name:n,pos:i,link_next:(p.ln||[]).includes(n)})));
- if(P.length){r=await sb.from('plans').insert(P);if(r.error)return fail(r.error)}
- if(E.length){r=await ins('plan_exercises',E,['link_next']);if(r.error)fail(r.error)}}
-async function pushWorkout(a){
- let r=await sb.from('workouts').insert({id:a.id,plan_name:a.plan,started_at:new Date(a.date).toISOString()});if(r.error)return fail(r.error);
- const rows=a.ex.flatMap(e=>e.sets.map((s,i)=>({workout_id:a.id,exercise:e.name,set_no:i+1,weight:s.w,reps:s.r,bw:s.bw||0,note:i===0?(e.note||null):null})));
- if(rows.length){r=await ins('workout_sets',rows,['bw','note']);if(r.error)return fail(r.error)}return true}
+ const g=JSON.stringify(S.plans);if(g!==PS){PS=g;clearTimeout(pt);pt=setTimeout(syncPlans,800)}cacheSave()};
 async function load(){
  const [pl,pe,wo,ws,pf,xr,cp,cl,cm]=await Promise.all([sb.from('plans').select('*').order('pos'),sb.from('plan_exercises').select('*').order('pos'),
   sb.from('workouts').select('*').order('started_at'),sb.from('workout_sets').select('*').order('set_no'),
   sb.from('profiles').select('*').eq('id',ME.id).maybeSingle(),sb.from('exercise_settings').select('*'),sb.from('cut_plans').select('*').order('start_date'),sb.from('cut_logs').select('*'),sb.from('cut_measures').select('*')]);
- const bad=[pl,pe,wo,ws].find(x=>x.error);if(bad)alert('Could not load your saved data: '+bad.error.message);
+ const bad=[pl,pe,wo,ws].find(x=>x.error);if(bad){if(isNet(bad.error)){await loadCache();return}alert('Could not load your saved data: '+bad.error.message)}OFFL=false;
  ME.name=pf.data?pf.data.display_name:'';
  const had=pl.data&&pl.data.length;
  let plans=(pl.data||[]).map(p=>{const rows=(pe.data||[]).filter(e=>e.plan_id===p.id);return{id:p.id,name:p.name,ex:rows.map(e=>e.name),ln:rows.filter(e=>e.link_next).map(e=>e.name)}});
  if(!had&&!pl.error)plans=SEED.map(p=>({id:uid(),name:p.name,ex:p.ex.slice(),ln:[]}));
  const sets=ws.data||[];
  const workouts=(wo.data||[]).map(w=>{const m=new Map();
-  sets.filter(s=>s.workout_id===w.id).forEach(s=>{if(!m.has(s.exercise))m.set(s.exercise,[]);m.get(s.exercise).push({w:+s.weight,r:s.reps,bw:+s.bw||0,note:s.note})});
-  return{id:w.id,date:new Date(w.started_at).getTime(),plan:w.plan_name,ex:[...m].map(([name,ss])=>({name,note:(ss.find(x=>x.note)||{}).note||'',sets:ss.map(x=>({w:x.w,r:x.r,bw:x.bw}))}))}});
+  sets.filter(s=>s.workout_id===w.id).forEach(s=>{if(!m.has(s.exercise))m.set(s.exercise,[]);m.get(s.exercise).push({w:+s.weight,r:s.reps,bw:+s.bw||0,note:s.note,wu:!!s.warmup})});
+  return{id:w.id,date:new Date(w.started_at).getTime(),plan:w.plan_name,ex:[...m].map(([name,ss])=>({name,note:(ss.find(x=>x.note)||{}).note||'',sets:ss.filter(x=>!x.wu).map(x=>({w:x.w,r:x.r,bw:x.bw})),warm:ss.filter(x=>x.wu).map(x=>({w:x.w,r:x.r,bw:x.bw}))}))}});
  const xs={};(xr.data||[]).forEach(r=>{xs[r.name]={bw:!!r.bw,rest:r.rest_sec||null}});
  let loc={};try{loc=JSON.parse(localStorage.getItem(lsk()))||{}}catch(e){}
  let cut=null;const cpl=(cp.data||[]).filter(x=>x.active!==false).pop();
@@ -186,7 +181,66 @@ function demoClient(){const T={};const tb=n=>T[n]=T[n]||[];
  return{from,rpc,auth:{signOut(){exitDemo()}}}}
 function enterDemo(){try{localStorage.removeItem('gymbros.local.demo')}catch(e){}sb=demoClient();boot({user:{id:'demo',email:'demo'}})}
 function exitDemo(){sb=REAL;boot(null)}
-async function boot(s){ME=s?s.user:null;if(ME)await load();READY=true;render()}
+const isNet=e=>!navigator.onLine||!!(e&&/failed to fetch|networkerror|network request|load failed|fetch failed/i.test(e.message||''));
+const QK=()=>'gymbros.q.'+ME.id;
+const qget=()=>{try{return JSON.parse(localStorage.getItem(QK()))||[]}catch(e){return[]}};
+const qset=q=>{try{localStorage.setItem(QK(),JSON.stringify(q))}catch(e){}};
+const lastUser=()=>{try{return JSON.parse(localStorage.getItem('gymbros.lastuser'))}catch(e){return null}};
+function updOff(){const el=$('#offb');if(!el)return;const n=ME&&ME.id!=='demo'?qget().length:0,off=!navigator.onLine;el.hidden=!(ME&&(off||n));el.textContent=off?'Offline · changes save on this phone'+(n?' ('+n+' waiting to upload)':''):'Uploading '+n+' saved change'+(n>1?'s':'')+'…'}
+function enq(op,once){let q=qget();if(once)q=q.filter(x=>!(x.t===op.t&&x.k===op.k));q.push(op);qset(q);updOff()}
+let ct=null,OFFL=false;
+function cacheSave(){if(!ME||ME.id==='demo')return;clearTimeout(ct);ct=setTimeout(()=>{try{localStorage.setItem('gymbros.cache.'+ME.id,JSON.stringify({plans:S.plans,workouts:S.workouts,xs:S.xs,bw:S.bw,cut:S.cut,name:ME.name}))}catch(e){}},600)}
+async function upPlans(){const u=ME.id;let r=await sb.from('plans').delete().eq('user_id',u);if(r.error)return r;
+ const P=S.plans.map((p,i)=>({id:p.id,name:p.name,pos:i}));
+ const E=S.plans.flatMap(p=>p.ex.map((n,i)=>({plan_id:p.id,name:n,pos:i,link_next:(p.ln||[]).includes(n)})));
+ if(P.length){r=await sb.from('plans').insert(P);if(r.error)return r}
+ if(E.length)r=await ins('plan_exercises',E,['link_next']);return r}
+async function syncPlans(){if(!navigator.onLine)return enq({t:'plans'},true);const r=await upPlans();if(r&&r.error){if(isNet(r.error))enq({t:'plans'},true);else fail(r.error)}}
+async function upWorkout(a,prs){
+ let r=await sb.from('workouts').upsert({id:a.id,plan_name:a.plan,started_at:new Date(a.date).toISOString()},{onConflict:'id'});if(r.error)return r;
+ r=await sb.from('workout_sets').delete().eq('workout_id',a.id);if(r.error)return r;
+ const rows=a.ex.flatMap(e=>{const w=e.warm||[];return w.map((x,i)=>({workout_id:a.id,exercise:e.name,set_no:i-w.length,weight:x.w,reps:x.r,bw:x.bw||0,warmup:true})).concat(e.sets.map((x,i)=>({workout_id:a.id,exercise:e.name,set_no:i+1,weight:x.w,reps:x.r,bw:x.bw||0,note:i===0?(e.note||null):null,warmup:false})))});
+ if(rows.length){r=await sb.from('workout_sets').insert(rows);
+  if(r.error&&/column|schema cache/i.test(r.error.message))r=await sb.from('workout_sets').insert(rows.filter(x=>!x.warmup).map(({bw,note,warmup,...y})=>y));
+  if(r.error)return r}
+ if(prs&&prs.length){const p=await sb.from('pr_feed').insert(prs);if(p.error&&isNet(p.error))return p}
+ return{error:null}}
+async function pushWorkout(a,prs){if(!navigator.onLine){enq({t:'wk',w:a,prs:prs||[]});return 'queued'}
+ const r=await upWorkout(a,prs);if(r.error){if(isNet(r.error)){enq({t:'wk',w:a,prs:prs||[]});return 'queued'}fail(r.error);return false}return true}
+async function runOp(op){let r;
+ if(op.t==='wk')r=await upWorkout(op.w,op.prs);
+ else if(op.t==='cl')r=await sb.from('cut_logs').upsert(op.row,{onConflict:'plan_id,day'});
+ else if(op.t==='cm')r=await sb.from('cut_measures').upsert(op.row,{onConflict:'plan_id,week'});
+ else if(op.t==='ct')r=await sb.from('cut_plans').update(op.u).eq('id',op.id);
+ else if(op.t==='plans')r=await upPlans();
+ else if(op.t==='xs'){const x=S.xs[op.n]||{};r=await sb.from('exercise_settings').upsert({user_id:ME.id,name:op.n,bw:!!x.bw,rest_sec:x.rest||null},{onConflict:'user_id,name'})}
+ else if(op.t==='bw')r=await sb.from('profiles').update({bodyweight:op.n}).eq('id',ME.id);
+ if(r&&r.error){if(isNet(r.error))return 'net';alert('Could not upload a saved change: '+r.error.message)}return true}
+let FLQ=false;
+async function flushQ(){if(FLQ||!ME||ME.id==='demo'||!navigator.onLine)return;FLQ=true;
+ try{if(qget().length&&sb.auth.getSession){const g=await sb.auth.getSession();if(!(g.data&&g.data.session)){AUTH.msg='Log in again to upload your saved changes.';ME=null;render();return}}
+  for(;;){const q=qget();if(!q.length)break;const r=await runOp(q[0]);if(r==='net')break;const q2=qget();q2.shift();qset(q2)}}
+ finally{FLQ=false;updOff()}}
+async function loadCache(){let c=null,loc={};try{c=JSON.parse(localStorage.getItem('gymbros.cache.'+ME.id))}catch(e){}try{loc=JSON.parse(localStorage.getItem(lsk()))||{}}catch(e){}
+ S={plans:(c&&c.plans)||[],workouts:(c&&c.workouts)||[],xs:(c&&c.xs)||{},bw:c&&c.bw!=null?c.bw:null,cut:(c&&c.cut)||null,cutErr:'',active:loc.active||null,rest:loc.rest||90};
+ ME.name=(c&&c.name)||ME.name||'';OFFL=true;PS=JSON.stringify(S.plans)}
+window.addEventListener('online',()=>{updOff();flushQ().then(()=>{if(OFFL&&ME&&!qget().length){OFFL=false;load().then(render)}})});
+window.addEventListener('offline',()=>{updOff()});
+let RECOVERY=/type=recovery/.test(location.hash);
+async function forgot(){const e=$('#ae').value.trim();AUTH.e=e;if(!e){AUTH.msg='Enter your email above first.';return render()}
+ const r=await sb.auth.resetPasswordForEmail(e,{redirectTo:location.origin+location.pathname});AUTH.msg=r.error?r.error.message:'Check your email for a reset link.';render()}
+async function setPw(){const p=$('#np').value;if(p.length<6){AUTH.msg='Use at least 6 characters.';return render()}
+ const r=await sb.auth.updateUser({password:p});if(r.error){AUTH.msg=r.error.message;return render()}
+ RECOVERY=false;AUTH.msg='';try{history.replaceState(null,'',location.pathname)}catch(e){}render()}
+function viewReset(){return `<div class="authpage">${isDark()?LOCK_D:LOCK_L}<div class="auth"><div class="mut" style="margin:12px 0 4px">Choose a new password</div><input id="np" type="password" placeholder="New password (6+ characters)" autocomplete="new-password" style="margin-bottom:12px">${AUTH.msg?`<div style="margin-bottom:12px;color:var(--wr)">${esc(AUTH.msg)}</div>`:''}<button class="p w" data-a="setpw">Save new password</button></div></div>`}
+function dl(name,rows){const csv=rows.map(r=>r.map(v=>{v=v==null?'':String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}).join(',')).join('\n');
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500)}
+function expWk(){const R=[['Date','Workout','Exercise','Type','Set','Weight (kg)','Reps','Bodyweight included (kg)','Note']];
+ S.workouts.forEach(w=>w.ex.forEach(e=>{(e.warm||[]).forEach((x,i)=>R.push([dstr(w.date),w.plan,e.name,'Warm-up',i+1,x.w,x.r,x.bw||0,'']));e.sets.forEach((x,i)=>R.push([dstr(w.date),w.plan,e.name,'Working',i+1,x.w,x.r,x.bw||0,i===0?e.note||'':'']))}));dl('gym-bros-workouts.csv',R)}
+function expCut(){if(!S.cut)return alert('No fat loss plan to export yet.');const p=S.cut.plan,R=[['Date','Day','Weight (kg)','Protein (g)','Carbs (g)','Fats (g)','Calories','Steps','Cardio (mins)','Training','Refeed day']];
+ Object.keys(S.cut.logs).sort().forEach(d=>{const l=S.cut.logs[d];R.push([d,dIdx(p,d),l.weight,l.protein,l.carbs,l.fats,l.kcal,l.steps,l.cardio,l.training,l.refeed?'Yes':''])});dl('gym-bros-fat-loss.csv',R)}
+const doneW=ex=>(ex.warm||[]).filter(s=>(s.d||s.t)&&+s.r>0);
+async function boot(s){ME=s?s.user:null;if(ME)await load();READY=true;if(ME&&ME.id!=='demo')try{localStorage.setItem('gymbros.lastuser',JSON.stringify({id:ME.id,email:ME.email}))}catch(e){}render();if(ME)flushQ()}
 async function doAuth(){const e=$('#ae').value.trim(),p=$('#ap').value;AUTH.msg='';AUTH.e=e;let r;
  if(AUTH.mode==='up'){const n=$('#an').value.trim();if(!n){AUTH.msg='Enter a display name for the leaderboard.';return render()}
   r=await sb.auth.signUp({email:e,password:p,options:{data:{display_name:n}}});
@@ -223,7 +277,7 @@ function last(name){const e=lastEx(name);return e?e.sets:null}
 const isBW=n=>!!(S.xs[n]&&S.xs[n].bw);
 const restFor=n=>(S.xs[n]&&S.xs[n].rest)||S.rest||90;
 function readyUp(n){const e=lastEx(n);if(!e||!e.sets.length||!e.sets.every(x=>x.r>=TOP))return null;const w=Math.max(...e.sets.map(x=>x.w-(x.bw||0)));return{w,to:w+2.5}}
-function newEx(name,ln){const l=last(name),u=readyUp(name);return{name,ln:!!ln,note:'',sets:l?l.map(s=>({w:'',r:'',d:false,pw:(s.w-(s.bw||0))+(u?2.5:0),pr:s.r,up:!!u})):[{w:'',r:'',d:false}]}}
+function newEx(name,ln){const l=last(name),u=readyUp(name);return{name,ln:!!ln,note:'',warm:(((lastEx(name)||{}).warm)||[]).map(s=>({w:'',r:'',d:false,pw:s.w-(s.bw||0),pr:s.r})),sets:l?l.map(s=>({w:'',r:'',d:false,pw:(s.w-(s.bw||0))+(u?2.5:0),pr:s.r,up:!!u})):[{w:'',r:'',d:false}]}}
 const wk=t=>{const d=new Date(t);d.setHours(0,0,0,0);d.setDate(d.getDate()-((d.getDay()+6)%7));return d.getTime()};
 function streak(){const w=new Set(S.workouts.map(x=>wk(x.date)));let c=wk(Date.now()),n=0;if(!w.has(c))c=wk(c-864e5*3);while(w.has(c)){n++;c=wk(c-864e5*3)}return n}
 function start(id){const p=S.plans.find(x=>x.id===id);MN=-1;SUM=null;S.active={id:uid(),date:Date.now(),plan:p.name,ex:p.ex.map(n=>newEx(n,(p.ln||[]).includes(n)))};save();render()}
@@ -235,8 +289,10 @@ function tip(n){const e=lastEx(n);if(!e||!e.sets.length)return '';const ss=e.set
  if(ss.every(x=>x.r>=TOP))return `Tip: you got ${TOP}+ reps on every set last time. Try ${Math.max(...ss.map(add))+2.5} kg${isBW(n)?' extra':''}.`;
  return `Tip: aim for ${Math.min(...ss.map(x=>x.r))+1}+ reps on every set before adding weight.`}
 const ago=t=>{const h=(Date.now()-new Date(t))/36e5;return h<1?'just now':h<24?Math.floor(h)+'h ago':Math.floor(h/24)+'d ago'};
-function saveXS(n){const x=S.xs[n];sb.from('exercise_settings').upsert({user_id:ME.id,name:n,bw:!!x.bw,rest_sec:x.rest||null},{onConflict:'user_id,name'}).then(r=>{if(r.error)alert('Could not save exercise settings. Run the latest SQL in Supabase first. '+r.error.message)})}
-function setBW(v){const n=parseFloat(v);if(!(n>0))return;S.bw=n;render();sb.from('profiles').update({bodyweight:n}).eq('id',ME.id).then(r=>{if(r.error)alert('Could not save bodyweight: '+r.error.message)})}
+function saveXS(n){const x=S.xs[n];save();if(!navigator.onLine)return enq({t:'xs',n,k:n},true);
+ sb.from('exercise_settings').upsert({user_id:ME.id,name:n,bw:!!x.bw,rest_sec:x.rest||null},{onConflict:'user_id,name'}).then(r=>{if(r.error){if(isNet(r.error))enq({t:'xs',n,k:n},true);else alert('Could not save exercise settings. Run the latest SQL in Supabase first. '+r.error.message)}})}
+function setBW(v){const n=parseFloat(v);if(!(n>0))return;S.bw=n;save();render();if(!navigator.onLine)return enq({t:'bw',n,k:'bw'},true);
+ sb.from('profiles').update({bodyweight:n}).eq('id',ME.id).then(r=>{if(r.error){if(isNet(r.error))enq({t:'bw',n,k:'bw'},true);else alert('Could not save bodyweight: '+r.error.message)}})}
 function badges(n,p){const x=S.xs[n]||{},b=[];if(x.bw)b.push('Bodyweight');if(x.rest)b.push('Rest '+x.rest+'s');if((p.ln||[]).includes(n))b.push('Superset with next');return b.join(' · ')||'Tap for settings'}
 function xsHTML(n,ctx,k,ln){const x=S.xs[n]||{},nm=esc(n);
  const lk=ctx==='wk'?`data-a="wlnk" data-i="${k}"`:`data-a="plnk" data-p="${k}" data-n="${nm}"`;
@@ -252,20 +308,21 @@ function exCard(e,i){const a=S.active,l=last(e.name),B=isBW(e.name),grp=e.ln||(i
  <div class="mut">${l?'Last time: '+fs(l):'First time logging this'}${B?' · bodyweight: enter extra kg':''}</div>
  ${le&&le.note?`<div class="mut">Last note: ${esc(le.note)}</div>`:''}
  ${AR[e.name]&&ru?`<div class="mn" style="color:var(--ac)">You got ${TOP}+ reps on every set at ${ru.w} kg last time. Try ${ru.to} kg today.</div>`:''}${HX[e.name]?hxPanel(e.name):''}${MN===i?menuPanel(e,i):''}
+ ${(e.warm||[]).map((s,j)=>`<div class="set wu"><b>W</b><input inputmode="decimal" placeholder="${s.pw!==undefined?s.pw:(B?'+kg':'kg')}" value="${s.w}" data-f="ww" data-i="${i}" data-j="${j}" aria-label="Warm-up weight"><input inputmode="numeric" placeholder="${s.pr!==undefined?s.pr:'reps'}" value="${s.r}" data-f="wr" data-i="${i}" data-j="${j}" aria-label="Warm-up reps"><button class="${s.d?'on':''}" data-a="wtick" data-i="${i}" data-j="${j}" aria-label="Mark warm-up done">✓</button><button class="d" data-a="rmwarm" data-i="${i}" data-j="${j}" aria-label="Remove warm-up set">✕</button></div>`).join('')}
  ${e.sets.map((s,j)=>`<div class="set"><b>${j+1}</b><input inputmode="decimal" placeholder="${s.pw!==undefined?s.pw+(s.up?' ↑':''):(B?'+kg':'kg')}" value="${s.w}" data-f="w" data-i="${i}" data-j="${j}" aria-label="Weight"><input inputmode="numeric" placeholder="${s.pr!==undefined?s.pr:'reps'}" value="${s.r}" data-f="r" data-i="${i}" data-j="${j}" aria-label="Reps"><button class="${s.d?'on':''}" data-a="tick" data-i="${i}" data-j="${j}" aria-label="Mark set done">✓</button></div>`).join('')}
  <input placeholder="Note for this exercise" data-f="note" data-i="${i}" value="${esc(e.note||'')}" style="margin-top:10px">
- <div class="row" style="margin-top:10px"><button data-a="addset" data-i="${i}">+ Add set</button><button class="p" data-a="rmset" data-i="${i}">Remove set</button></div></div>`}
+ <div class="row" style="margin-top:10px;flex-wrap:wrap"><button data-a="addset" data-i="${i}">+ Add set</button><button data-a="addwarm" data-i="${i}">+ Warm-up</button><button class="p" data-a="rmset" data-i="${i}">Remove set</button></div></div>`}
 function feedHTML(){return L.feed&&L.feed.length?`<h2>Recent PRs</h2><div class="card">${L.feed.map((f,i)=>`<div class="row pr" style="gap:10px;align-items:flex-start;${i===0?'border-top:0;':''}">${TRO}<div><b>${esc(f.display_name)}</b> · ${esc(f.exercise)}<div class="mut">${+f.weight} kg × ${f.reps} · ${ago(f.created_at)}</div></div></div>`).join('')}</div>`:''}
 const HICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
 function hxPanel(n){const h=hist(n).slice(-5).reverse();
  return '<div class="hx">'+(h.length?h.map(x=>`<div><span class="mut">${fd(x.t)}</span><b>${fs(x.sets)}</b></div>${x.note?`<div class="mut" style="padding-top:0">${esc(x.note)}</div>`:''}`).join(''):'<div class="mut">No previous sessions yet.</div>')+'</div>'}
 const dstr=t=>{const d=new Date(t);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 function finish(){const a=S.active;
- a.ex=a.ex.map(e=>{const B=isBW(e.name)?(S.bw||0):0;return{name:e.name,note:(e.note||'').trim(),sets:done(e).map(x=>({w:(+x.w||0)+B,r:+x.r,bw:B}))}}).filter(e=>e.sets.length);
+ a.ex=a.ex.map(e=>{const B=isBW(e.name)?(S.bw||0):0;return{name:e.name,note:(e.note||'').trim(),sets:done(e).map(x=>({w:(+x.w||0)+B,r:+x.r,bw:B})),warm:doneW(e).map(x=>({w:(+x.w||0)+B,r:+x.r,bw:B}))}}).filter(e=>e.sets.length);
  const prs=[];a.ex.forEach(e=>{const prev=Math.max(0,...hist(e.name).map(x=>x.e1)),b=e.sets.reduce((p,x)=>e1(x.w,x.r)>e1(p.w,p.r)?x:p);if(prev>0&&e1(b.w,b.r)>prev+0.01)prs.push({exercise:e.name,weight:b.w,reps:b.r,e1rm:+e1(b.w,b.r).toFixed(1)})});
  if(a.ex.length)SUM={sets:a.ex.reduce((n,e)=>n+e.sets.length,0),vol:a.ex.reduce((n,e)=>n+e.sets.reduce((m,x)=>m+x.w*x.r,0),0),prs,up:a.ex.filter(e=>e.sets.every(x=>x.r>=TOP)).map(e=>{const w=Math.max(...e.sets.map(x=>x.w-(x.bw||0)));return{name:e.name,w,to:w+2.5,bw:isBW(e.name)}})};
  FLASH=a.ex.length?'Saving…':'No sets entered';const clr=()=>setTimeout(()=>{FLASH='';if(!S.active&&tab==='train')render()},5000);
- if(a.ex.length){S.workouts.push(a);S.workouts.sort((x,y)=>x.date-y.date);pushWorkout(a).then(ok=>{FLASH=ok?'Workout saved'+(prs.length?' · '+prs.length+' new PR'+(prs.length>1?'s':''):''):'Saved on this phone only. Upload failed';if(ok&&prs.length)sb.from('pr_feed').insert(prs).then(()=>{});if(!S.active&&tab==='train')render();clr()})}else clr();
+ if(a.ex.length){S.workouts.push(a);S.workouts.sort((x,y)=>x.date-y.date);pushWorkout(a,prs).then(ok=>{const pt=prs.length?' · '+prs.length+' new PR'+(prs.length>1?'s':''):'';FLASH=ok===true?'Workout saved'+pt:ok==='queued'?'Saved offline. It will upload when you are back online'+pt:'Saved on this phone only. Upload failed';if(!S.active&&tab==='train')render();clr()})}else clr();
  S.active=null;save();render()}
 
 function viewHome(){
@@ -293,6 +350,7 @@ function viewPlans(){return `<h1>Plans</h1>
  ${p.ex.map((n,i)=>`<div class="row sp pr"><div data-a="px" data-p="${p.id}" data-n="${esc(n)}" style="flex:1;cursor:pointer"><span>${esc(n)}</span><div class="mut" style="font-size:12px">${badges(n,p)}</div></div><span class="row"><button data-a="up" data-p="${p.id}" data-i="${i}" aria-label="Move up">↑</button><button data-a="dn" data-p="${p.id}" data-i="${i}" aria-label="Move down">↓</button><button class="d" data-a="delex" data-p="${p.id}" data-i="${i}" aria-label="Remove">✕</button></span></div>${PX[p.id+'|'+n]?`<div class="mn">${xsHTML(n,'pl',p.id,(p.ln||[]).includes(n))}</div>`:''}`).join('')}
  <div class="row" style="margin-top:10px"><input placeholder="Add exercise" id="n${p.id}"><button class="p" data-a="addex" data-p="${p.id}">Add</button></div></div>`).join('')}
  <div class="card"><h3>Your bodyweight</h3><div class="row" style="margin-top:10px"><input id="bwp" inputmode="decimal" placeholder="kg" value="${S.bw??''}"><button class="p" data-a="setbwp">Save</button></div><div class="mut" style="margin-top:8px">Used for bodyweight exercises like pull-ups and dips.</div></div>
+ <div class="card"><h3>Your data</h3><div class="mut" style="margin:8px 0 12px">Download a spreadsheet copy of your logs.</div><button class="w" data-a="expwk">Download workouts (CSV)</button><button class="w" style="margin-top:8px" data-a="expcut">Download fat loss log (CSV)</button></div>
  <button class="w p" data-a="newplan">New plan</button>
  <button class="w" style="margin-top:12px" data-a="signout">Log out (${esc(ME.name||ME.email)})</button>`}
 
@@ -334,6 +392,7 @@ function viewAuth(){const up=AUTH.mode==='up';
  ${AUTH.msg?`<div style="margin-bottom:12px;color:var(--wr)">${esc(AUTH.msg)}</div>`:''}
  <button class="p w" data-a="auth">${up?'Sign up':'Log in'}</button>
  <button class="w" style="margin-top:8px" data-a="authmode">${up?'I already have an account':'Create an account'}</button>
+ ${up?'':'<button class="w" style="margin-top:8px" data-a="forgot">Forgot password?</button>'}
  <button class="w" style="margin-top:8px" data-a="demo">Try demo (no account)</button></div></div>`}
 function viewBoard(){
  if(L.rows===null)return '<h1>Leaderboard</h1><p class="mut">Loading…</p>';
@@ -370,10 +429,10 @@ function viewWk(tabs){const W=[...S.workouts].reverse();
  return `<h1>Progress</h1>${tabs}`+(W.length?W.map(w=>{
   const vol=w.ex.reduce((a,e)=>a+e.sets.reduce((b,x)=>b+x.w*x.r,0),0),n=w.ex.reduce((a,e)=>a+e.sets.length,0),o=OPEN[w.id];
   return `<div class="card"><div class="row sp" data-a="wkopen" data-id="${w.id}" style="cursor:pointer"><div><h3>${esc(w.plan||'Workout')}</h3><div class="mut">${fdl(w.date)} · ${n} sets · ${Math.round(vol).toLocaleString()} kg</div></div><span class="mut">${o?'−':'+'}</span></div>`
-  +(o?`<div class="hx" style="margin-top:12px">${w.ex.map(e=>`<div style="display:block;padding:6px 0"><b>${esc(e.name)}</b><br><span class="mut">${fs(e.sets)}</span>${e.note?`<br><span class="mut">Note: ${esc(e.note)}</span>`:''}</div>`).join('')}</div><button class="d w" style="margin-top:12px" data-a="wkdel" data-id="${w.id}">Delete workout</button>`:'')+'</div>'}).join(''):'<div class="card mut">No workouts logged yet.</div>')}
-async function delWk(id){if(!confirm('Delete this workout? This cannot be undone.'))return;
+  +(o?`<div class="hx" style="margin-top:12px">${w.ex.map(e=>`<div style="display:block;padding:6px 0"><b>${esc(e.name)}</b><br><span class="mut">${fs(e.sets)}</span>${e.warm&&e.warm.length?`<br><span class="mut">Warm-up: ${fs(e.warm)}</span>`:''}${e.note?`<br><span class="mut">Note: ${esc(e.note)}</span>`:''}</div>`).join('')}</div><button class="d w" style="margin-top:12px" data-a="wkdel" data-id="${w.id}">Delete workout</button>`:'')+'</div>'}).join(''):'<div class="card mut">No workouts logged yet.</div>')}
+async function delWk(id){if(!navigator.onLine)return alert('You need a connection to delete a workout.');if(!confirm('Delete this workout? This cannot be undone.'))return;
  const r=await sb.from('workouts').delete().eq('id',id);if(r.error)return fail(r.error);
- S.workouts=S.workouts.filter(w=>w.id!==id);render()}
+ S.workouts=S.workouts.filter(w=>w.id!==id);save();render()}
 const mround=(x,m)=>Math.round(x/m)*m;
 function cutCalc(i){const g=i.gender==='M'?0:-161,f18=((10*i.weight+6.25*i.height-5*i.age)+g)*1.05,g18=f18*1.25,g19=(f18*7-g18)/6;
  const kcal=mround(g19,50),ref=mround(g18,50),prot=mround(i.weight>90?i.weight*1.5:i.weight*2,5),fat=mround(i.weight*0.55,5);
@@ -398,7 +457,7 @@ function cutSetup(){const c=CF,ok=+c.age&&+c.height&&+c.weight&&+c.steps;
  ${f('start','Start date','','date')}
  <div class="mut" style="margin:14px 0 0">Starting measurements in cm (optional)</div><div class="grid">${['chest','waist','hips','arms'].map(k=>`<div>${f('m_'+k,k[0].toUpperCase()+k.slice(1),'cm')}</div>`).join('')}</div>
  <button class="p w" style="margin-top:14px" data-a="cfcalc">Calculate my targets</button></div>${pv}`}
-async function startCut(){const c=CF,t=cutCalc({age:+c.age,height:+c.height,weight:+c.weight,gender:c.gender,steps:+c.steps});
+async function startCut(){if(!navigator.onLine)return alert('You need a connection to start a plan.');const c=CF,t=cutCalc({age:+c.age,height:+c.height,weight:+c.weight,gender:c.gender,steps:+c.steps});
  const row={id:uid(),start_date:c.start,age:+c.age,height:+c.height,gender:c.gender,start_weight:+c.weight,avg_steps:+c.steps,...t,active:true};
  const r=await sb.from('cut_plans').insert(row);if(r.error)return alert('Could not start the plan. Run the latest SQL in Supabase first. '+r.error.message);
  const meas={};const m={plan_id:row.id,week:0};['chest','waist','hips','arms'].forEach(k=>{if(c['m_'+k])m[k]=+c['m_'+k]});
@@ -410,14 +469,19 @@ const cutMsg=m=>{CUTMSG=m;setTimeout(()=>{CUTMSG='';if(tab==='cut')render()},300
 async function saveDay(){const p=S.cut.plan,v=CL.v,n=x=>x===''||x==null?null:+x;
  const row={plan_id:p.id,day:CL.day,protein:n(v.protein),carbs:n(v.carbs),fats:n(v.fats),weight:n(v.weight),steps:n(v.steps),training:v.training||null,cardio:n(v.cardio),refeed:!!CL.ref};
  row.kcal=(row.protein||0)*4+(row.carbs||0)*4+(row.fats||0)*9;
- const r=await sb.from('cut_logs').upsert(row,{onConflict:'plan_id,day'});if(r.error)return alert('Could not save: '+r.error.message);
- S.cut.logs[CL.day]={...(S.cut.logs[CL.day]||{}),...row};cutMsg('Day saved');render()}
+ const r=navigator.onLine?await sb.from('cut_logs').upsert(row,{onConflict:'plan_id,day'}):{error:{message:'offline'}};let q=false;
+ if(r.error){if(isNet(r.error)){enq({t:'cl',row,k:row.day},true);q=true}else return alert('Could not save: '+r.error.message)}
+ S.cut.logs[CL.day]={...(S.cut.logs[CL.day]||{}),...row};save();cutMsg(q?'Saved offline. It will upload later':'Day saved');render()}
 async function saveMeas(){const p=S.cut.plan,row={plan_id:p.id,week:CM};['chest','waist','hips','arms'].forEach(k=>{row[k]=CMV[k]===''||CMV[k]==null?null:+CMV[k]});
- const r=await sb.from('cut_measures').upsert(row,{onConflict:'plan_id,week'});if(r.error)return alert('Could not save: '+r.error.message);S.cut.meas[CM]=row;cutMsg('Measurements saved');render()}
+ const r=navigator.onLine?await sb.from('cut_measures').upsert(row,{onConflict:'plan_id,week'}):{error:{message:'offline'}};let q=false;
+ if(r.error){if(isNet(r.error)){enq({t:'cm',row,k:CM},true);q=true}else return alert('Could not save: '+r.error.message)}
+ S.cut.meas[CM]=row;save();cutMsg(q?'Saved offline. It will upload later':'Measurements saved');render()}
 async function saveTargets(){const p=S.cut.plan,g=id=>+$('#'+id).value,u={protein:g('ctp'),carbs:g('ctc'),fats:g('ctf'),refeed_carbs:g('ctr'),step_target:g('cts')};
  u.kcal=u.protein*4+u.carbs*4+u.fats*9;u.refeed_kcal=u.protein*4+u.refeed_carbs*4+u.fats*9;
- const r=await sb.from('cut_plans').update(u).eq('id',p.id);if(r.error)return alert('Could not save: '+r.error.message);Object.assign(p,u);CTE=false;cutMsg('Targets updated');render()}
-async function endCut(){if(!confirm('End this plan? Your logs stay saved, and you can start a new plan.'))return;const r=await sb.from('cut_plans').update({active:false}).eq('id',S.cut.plan.id);if(r.error)return alert('Could not end plan: '+r.error.message);S.cut=null;CL=null;CF={gender:'M',start:dstr(Date.now()),show:false};render()}
+ const r=navigator.onLine?await sb.from('cut_plans').update(u).eq('id',p.id):{error:{message:'offline'}};let q=false;
+ if(r.error){if(isNet(r.error)){enq({t:'ct',id:p.id,u,k:p.id},true);q=true}else return alert('Could not save: '+r.error.message)}
+ Object.assign(p,u);CTE=false;save();cutMsg(q?'Saved offline. It will upload later':'Targets updated');render()}
+async function endCut(){if(!navigator.onLine)return alert('You need a connection to end a plan.');if(!confirm('End this plan? Your logs stay saved, and you can start a new plan.'))return;const r=await sb.from('cut_plans').update({active:false}).eq('id',S.cut.plan.id);if(r.error)return alert('Could not end plan: '+r.error.message);S.cut=null;CL=null;CF={gender:'M',start:dstr(Date.now()),show:false};render()}
 function weekStats(p){const out=[];for(let w=1;w<=8;w++){const rows=[];for(let d=0;d<7;d++){const l=S.cut.logs[addDays(p.start_date,(w-1)*7+d)];if(l)rows.push(l)}
  const avg=k=>{const a=rows.map(r=>r[k]).filter(x=>x!=null&&x!=='');return a.length?a.reduce((s,x)=>s+ +x,0)/a.length:null};
  out.push({w,n:rows.length,weight:avg('weight'),kcal:avg('kcal'),protein:avg('protein'),steps:avg('steps')})}return out}
@@ -448,10 +512,10 @@ function viewCut(){const hd='<h1>Fat loss</h1>';
  <h2>Progress</h2><div class="card"><h3>Weight</h3>${cutChart('w')}</div><div class="card"><h3>Calories</h3>${cutChart('k')}</div><div class="card"><h3>Steps</h3>${cutChart('s')}</div>
  <button class="d w" data-a="cend">End this plan</button>`}
 function render(){if(!S.active&&rend)rtStop();
- $('#v').innerHTML=!READY?'<p class="mut">Loading…</p>':!ME?viewAuth():tab==='train'?(S.active?viewLog():viewHome()):tab==='plans'?viewPlans():tab==='board'?viewBoard():tab==='cut'?viewCut():viewProg();
+ $('#v').innerHTML=!READY?'<p class="mut">Loading…</p>':RECOVERY&&ME?viewReset():!ME?viewAuth():tab==='train'?(S.active?viewLog():viewHome()):tab==='plans'?viewPlans():tab==='board'?viewBoard():tab==='cut'?viewCut():viewProg();
  if($('#ae'))$('#ae').value=AUTH.e||'';
  if(tab==='cut'&&S.cut&&CL)cutLive();
- $('nav').hidden=!ME;document.body.classList.toggle('lgn',READY&&!ME);$('#hm').hidden=!(ME&&(tab!=='train'||S.active));$('#hm').setAttribute('aria-label',tab==='train'?'Leave workout':'Back to home');
+ $('nav').hidden=!ME||RECOVERY;document.body.classList.toggle('lgn',READY&&(!ME||RECOVERY));$('#hm').hidden=!(ME&&!RECOVERY&&(tab!=='train'||S.active));updOff();$('#hm').setAttribute('aria-label',tab==='train'?'Leave workout':'Back to home');
  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===tab))}
 const P=id=>S.plans.find(p=>p.id===id);
 document.addEventListener('click',e=>{
@@ -490,6 +554,9 @@ document.addEventListener('click',e=>{
  else if(a==='cte'){CTE=!CTE;render()}
  else if(a==='ctsave')saveTargets();
  else if(a==='cend')endCut();
+ else if(a==='addwarm'){const e=S.active.ex[i];e.warm=e.warm||[];const p=e.warm[e.warm.length-1];e.warm.push({w:'',r:'',d:false,pw:p?(p.w!==''?p.w:p.pw):undefined,pr:p?(p.r!==''?p.r:p.pr):undefined});save();render()}
+ else if(a==='wtick'){const s=S.active.ex[i].warm[j];s.d=!s.d;if(s.d){if(s.w===''&&s.pw!==undefined)s.w=s.pw;if(s.r===''&&s.pr!==undefined)s.r=s.pr}save();render()}
+ else if(a==='rmwarm'){S.active.ex[i].warm.splice(j,1);save();render()}
  else if(a==='ar'){const n=S.active.ex[i].name;AR[n]=!AR[n];render()}
  else if(a==='demo')enterDemo();
  else if(a==='sumok'){SUM=null;render()}
@@ -497,7 +564,11 @@ document.addEventListener('click',e=>{
  else if(a==='wkopen'){OPEN[D.id]=!OPEN[D.id];render()}
  else if(a==='wkdel')delWk(D.id);
  else if(a==='authmode'){AUTH.mode=AUTH.mode==='in'?'up':'in';AUTH.msg='';render()}
- else if(a==='auth')doAuth();else if(a==='signout')sb.auth.signOut();else if(a==='mkgroup')mk();else if(a==='joingroup')jn();
+ else if(a==='auth')doAuth();else if(a==='signout'){try{localStorage.removeItem('gymbros.lastuser')}catch(e){}sb.auth.signOut()}
+ else if(a==='forgot')forgot();
+ else if(a==='setpw')setPw();
+ else if(a==='expwk')expWk();
+ else if(a==='expcut')expCut();else if(a==='mkgroup')mk();else if(a==='joingroup')jn();
  else if(a==='wk'){L.wk=+D.v;L.msg='';loadBoard()}
  else if(a==='gsel'){L.sel=D.id;L.msg='';L.add=false;loadBoard()}
  else if(a==='gadd'){L.add=!L.add;L.msg='';render()}
@@ -513,6 +584,7 @@ document.addEventListener('input',e=>{const t=e.target,D=t.dataset;
  else if(D.f==='cl'){CL.v[D.k]=t.value;cutLive()}
  else if(D.f==='cld'){if(t.value){initCL(t.value);render()}}
  else if(D.f==='cmv'){CMV[D.k]=t.value}
+ else if(D.f==='ww'||D.f==='wr'){const x=S.active.ex[+D.i].warm[+D.j];x[D.f==='ww'?'w':'r']=t.value;x.t=true;save()}
  else if(D.f==='note'){S.active.ex[+D.i].note=t.value;save()}
  else if(D.f==='pn'){P(D.p).name=t.value;save()}});
 document.addEventListener('change',e=>{const D=e.target.dataset;if(D.f==='pe'){pe=e.target.value;render()}else if(D.f==='xrest'){const n=D.n;S.xs[n]=S.xs[n]||{};S.xs[n].rest=e.target.value?+e.target.value:null;saveXS(n)}});
@@ -523,7 +595,8 @@ function applyTheme(){document.documentElement.dataset.theme=isDark()?'dark':'li
 $('#tm').onclick=()=>{TH=isDark()?'light':'dark';try{localStorage.setItem('gymbros.theme',TH)}catch(e){}applyTheme();render()};
 applyTheme();
 $('#hm').onclick=()=>{if(tab!=='train'){tab='train';render();window.scrollTo(0,0);return}const a=S.active;if(!a)return;const any=a.ex.some(e=>e.sets.some(x=>x.d||x.t));if(any&&!confirm('Leave this workout? What you entered will be lost.'))return;S.active=null;save();render()};
-sb.auth.onAuthStateChange((ev,sess)=>{if(ev==='TOKEN_REFRESHED'||ev==='USER_UPDATED')return;if(ev==='SIGNED_IN'&&ME&&sess&&ME.id===sess.user.id)return;setTimeout(()=>boot(sess),0)});
+sb.auth.onAuthStateChange((ev,sess)=>{if(ev==='PASSWORD_RECOVERY'){RECOVERY=true;AUTH.msg=''}if(ev==='TOKEN_REFRESHED'||ev==='USER_UPDATED')return;if(ev==='SIGNED_IN'&&ME&&sess&&ME.id===sess.user.id)return;if(!sess&&!navigator.onLine){const lu=lastUser();if(lu){setTimeout(()=>boot({user:lu}),0);return}}setTimeout(()=>boot(sess),0)});
+if('serviceWorker' in navigator&&/^https?:/.test(location.protocol))window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 render();
 </script>
 </body>
