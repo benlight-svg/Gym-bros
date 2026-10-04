@@ -158,6 +158,10 @@ nav button.on{color:var(--ac)}
 .eqb span{min-width:0;overflow-wrap:anywhere}
 .eqb svg{width:22px;height:22px;flex:none}
 .cth svg{width:26px;height:26px}
+.setbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.setbtns .full{grid-column:1/-1}
+.ctimer{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0 4px}
+.ctimer .big{font-variant-numeric:tabular-nums}
 </style>
 </head>
 <body>
@@ -348,7 +352,15 @@ const CIC={'Cross Trainer':'<svg viewBox="0 0 24 24" fill="none" stroke="current
 const cIcon=n=>CIC[n.replace(/ \(LISS\)$/,'')]||PULSE;
 function cListHTML(){const q=CSQ.trim().toLowerCase(),r=CARDIO.filter(n=>n.toLowerCase().includes(q));return r.length?r.map(n=>`<button class="crow" data-a="cadd" data-n="${esc(n)}"><span class="cth">${cIcon(n)}</span><span>${esc(n)}</span></button>`).join(''):'<div class="mut" style="padding:12px">No match</div>'}
 const sheetHTML=()=>CSH?`<div class="sheet"><div class="sback" data-a="cclose"></div><div class="sbox"><div class="row sp" style="margin-bottom:12px"><h2 style="margin:0">Add cardio</h2><button data-a="cclose">Done</button></div><input id="csq" data-f="csq" placeholder="Search" value="${esc(CSQ)}" style="margin-bottom:6px"><div id="clist">${cListHTML()}</div></div></div>`:'';
-const cardioCards=()=>(S.active.cardio||[]).map((c,i)=>`<div class="card"><div class="row sp"><h3>${esc(c.name)}</h3><button class="hb" data-a="rmcardio" data-i="${i}" aria-label="Remove cardio">✕</button></div><div class="grid"><div><div class="mut" style="margin:10px 0 4px">Minutes</div><input inputmode="decimal" data-f="cmin" data-i="${i}" value="${esc(c.min)}" placeholder="30"></div><div><div class="mut" style="margin:10px 0 4px">Distance (km)</div><input inputmode="decimal" data-f="ckm" data-i="${i}" value="${esc(c.km)}" placeholder="optional"></div></div></div>`).join('');
+const fmtT=ms=>{const t=Math.floor(ms/1000),h=Math.floor(t/3600),m=Math.floor(t%3600/60),sc=t%60,p=n=>String(n).padStart(2,'0');return (h?h+':':'')+p(m)+':'+p(sc)};
+const cms=c=>c.t0?(c.acc||0)+(Date.now()-c.t0):(c.acc||(+c.min||0)*60000);
+const cmin=ms=>String(Math.round(ms/6000)/10);
+const cardioCards=()=>(S.active.cardio||[]).map((c,i)=>`<div class="card"><div class="row sp"><h3>${esc(c.name)}</h3><button class="hb" data-a="rmcardio" data-i="${i}" aria-label="Remove cardio">✕</button></div><div class="ctimer"><div class="big" data-ct="${i}">${fmtT(cms(c))}</div><button class="${c.t0?'':'p'}" data-a="ctog" data-i="${i}">${c.t0?'Pause':(cms(c)>0?'Resume':'Start timer')}</button></div><div class="grid"><div><div class="mut" style="margin:10px 0 4px">Minutes</div><input inputmode="decimal" data-f="cmin" data-i="${i}" value="${esc(c.min)}" placeholder="30"></div><div><div class="mut" style="margin:10px 0 4px">Distance (km)</div><input inputmode="decimal" data-f="ckm" data-i="${i}" value="${esc(c.km)}" placeholder="optional"></div></div></div>`).join('');
+let CTI=null;
+function ctTick(){const a=S.active;if(!a||!(a.cardio||[]).some(c=>c.t0)){clearInterval(CTI);CTI=null;return}
+ a.cardio.forEach((c,i)=>{if(!c.t0)return;const ms=cms(c),el=document.querySelector('[data-ct="'+i+'"]');if(el)el.textContent=fmtT(ms);
+  const inp=document.querySelector('[data-f=cmin][data-i="'+i+'"]');if(inp&&document.activeElement!==inp)inp.value=(ms/60000).toFixed(1);c.min=(ms/60000).toFixed(1)})}
+function ctEnsure(){const run=S.active&&(S.active.cardio||[]).some(c=>c.t0);if(run&&!CTI)CTI=setInterval(ctTick,1000);if(!run&&CTI){clearInterval(CTI);CTI=null}}
 function eqPanel(e,i){const cur=equipOf(e.name);return `<div class="row sp srow" data-a="eqo" data-i="${i}" style="cursor:pointer"><span>Equipment</span><span class="mut">${cur||'None'} ›</span></div>${EQO===i?`<div class="eqgrid">${EQL.map(([n,ic])=>`<button class="eqb ${(n===cur||(n==='None'&&!cur))?'on':''}" data-a="seteq" data-i="${i}" data-e="${esc(n)}">${ic}<span>${n}</span></button>`).join('')}</div>`:''}`}
 function setEq(i,nm){const o=S.active.ex[i],n=newEx(nm,o.ln);
  const touched=o.sets.some(x=>x.d||x.t)||(o.warm||[]).some(x=>x.d||x.t)||o.note;
@@ -389,7 +401,7 @@ function exCard(e,i){const a=S.active,l=last(e.name),B=isBW(e.name),grp=e.ln||(i
  ${(e.warm||[]).map((s,j)=>`<div class="set wu"><b>W</b><input inputmode="decimal" placeholder="${s.pw!==undefined?s.pw:(B?'+kg':'kg')}" value="${s.w}" data-f="ww" data-i="${i}" data-j="${j}" aria-label="Warm-up weight"><input inputmode="numeric" placeholder="${s.pr!==undefined?s.pr:'reps'}" value="${s.r}" data-f="wr" data-i="${i}" data-j="${j}" aria-label="Warm-up reps"><button class="${s.d?'on':''}" data-a="wtick" data-i="${i}" data-j="${j}" aria-label="Mark warm-up done">✓</button><button class="d" data-a="rmwarm" data-i="${i}" data-j="${j}" aria-label="Remove warm-up set">✕</button></div>`).join('')}
  ${e.sets.map((s,j)=>`<div class="set"><b>${j+1}</b><input inputmode="decimal" placeholder="${s.pw!==undefined?s.pw+(s.up?' ↑':''):(B?'+kg':'kg')}" value="${s.w}" data-f="w" data-i="${i}" data-j="${j}" aria-label="Weight"><input inputmode="numeric" placeholder="${s.pr!==undefined?s.pr:'reps'}" value="${s.r}" data-f="r" data-i="${i}" data-j="${j}" aria-label="Reps"><button class="${s.d?'on':''}" data-a="tick" data-i="${i}" data-j="${j}" aria-label="Mark set done">✓</button></div>`).join('')}
  <input placeholder="Note for this exercise" data-f="note" data-i="${i}" value="${esc(e.note||'')}" style="margin-top:10px">
- <div class="row" style="margin-top:10px;flex-wrap:wrap"><button data-a="addset" data-i="${i}">+ Add set</button><button data-a="addwarm" data-i="${i}">+ Warm-up</button><button class="p" data-a="rmset" data-i="${i}">Remove set</button></div></div>`}
+ <div class="setbtns"><button data-a="addset" data-i="${i}">+ Add set</button><button data-a="addwarm" data-i="${i}">+ Warm-up</button><button class="p full" data-a="rmset" data-i="${i}">Remove set</button></div></div>`}
 function feedHTML(){return L.feed&&L.feed.length?`<h2>Recent PRs</h2><div class="card">${L.feed.map((f,i)=>`<div class="row pr" style="gap:10px;align-items:flex-start;${i===0?'border-top:0;':''}">${TRO}<div><b>${esc(f.display_name)}</b> · ${esc(f.exercise)}<div class="mut">${+f.weight} kg × ${f.reps} · ${ago(f.created_at)}</div></div></div>`).join('')}</div>`:''}
 const HICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
 function hxPanel(n){const h=hist(n).slice(-5).reverse();
@@ -397,7 +409,7 @@ function hxPanel(n){const h=hist(n).slice(-5).reverse();
 const dstr=t=>{const d=new Date(t);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 function finish(){const a=S.active;
  a.ex=a.ex.map(e=>{const B=isBW(e.name)?(S.bw||0):0;return{name:e.name,note:(e.note||'').trim(),sets:done(e).map(x=>({w:(+x.w||0)+B,r:+x.r,bw:B})),warm:doneW(e).map(x=>({w:(+x.w||0)+B,r:+x.r,bw:B}))}}).filter(e=>e.sets.length);
- a.cardio=(a.cardio||[]).filter(c=>(+c.min>0)||(+c.km>0)).map(c=>({name:c.name,min:+c.min||0,km:+c.km||0}));const has=a.ex.length||a.cardio.length;
+ (a.cardio||[]).forEach(c=>{if(c.t0){c.acc=cms(c);c.t0=null;c.min=cmin(c.acc)}});a.cardio=(a.cardio||[]).filter(c=>(+c.min>0)||(+c.km>0)).map(c=>({name:c.name,min:+c.min||0,km:+c.km||0}));const has=a.ex.length||a.cardio.length;
  const prs=[];a.ex.forEach(e=>{const prev=Math.max(0,...hist(e.name).map(x=>x.e1)),b=e.sets.reduce((p,x)=>e1(x.w,x.r)>e1(p.w,p.r)?x:p);if(prev>0&&e1(b.w,b.r)>prev+0.01)prs.push({exercise:e.name,weight:b.w,reps:b.r,e1rm:+e1(b.w,b.r).toFixed(1)})});
  if(has)SUM={cmin:a.cardio.reduce((n,c)=>n+c.min,0),sets:a.ex.reduce((n,e)=>n+e.sets.length,0),vol:a.ex.reduce((n,e)=>n+e.sets.reduce((m,x)=>m+x.w*x.r,0),0),prs,up:a.ex.filter(e=>e.sets.every(x=>x.r>=TOP)).map(e=>{const w=Math.max(...e.sets.map(x=>x.w-(x.bw||0)));return{name:e.name,w,to:w+2.5,bw:isBW(e.name)}})};
  FLASH=has?'Saving…':'Nothing entered';const clr=()=>setTimeout(()=>{FLASH='';if(!S.active&&tab==='train')render()},5000);
@@ -594,7 +606,7 @@ function render(){if(!S.active&&rend)rtStop();
  $('#v').innerHTML=!READY?'<p class="mut">Loading…</p>':RECOVERY&&ME?viewReset():!ME?viewAuth():tab==='train'?(S.active?viewLog():viewHome()):tab==='plans'?viewPlans():tab==='board'?viewBoard():tab==='cut'?viewCut():viewProg();
  if($('#ae'))$('#ae').value=AUTH.e||'';
  if(tab==='cut'&&S.cut&&CL)cutLive();
- $('nav').hidden=!ME||RECOVERY;document.body.classList.toggle('lgn',READY&&(!ME||RECOVERY));$('#hm').hidden=!(ME&&!RECOVERY&&(tab!=='train'||S.active));updOff();$('#hm').setAttribute('aria-label',tab==='train'?'Leave workout':'Back to home');
+ $('nav').hidden=!ME||RECOVERY;document.body.classList.toggle('lgn',READY&&(!ME||RECOVERY));$('#hm').hidden=!(ME&&!RECOVERY&&(tab!=='train'||S.active));updOff();ctEnsure();$('#hm').setAttribute('aria-label',tab==='train'?'Leave workout':'Back to home');
  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===tab))}
 const P=id=>S.plans.find(p=>p.id===id);
 document.addEventListener('click',e=>{
@@ -641,6 +653,7 @@ document.addEventListener('click',e=>{
  else if(a==='cardio'){CSH=true;CSQ='';render()}
  else if(a==='cclose'){CSH=false;render()}
  else if(a==='cadd'){(S.active.cardio=S.active.cardio||[]).push({name:D.n,min:'',km:''});CSH=false;save();render()}
+ else if(a==='ctog'){const c=S.active.cardio[i];if(c.t0){c.acc=cms(c);c.t0=null;c.min=cmin(c.acc)}else{c.acc=cms(c);c.t0=Date.now()}save();render()}
  else if(a==='rmcardio'){S.active.cardio.splice(i,1);save();render()}
  else if(a==='demo')enterDemo();
  else if(a==='sumok'){SUM=null;render()}
@@ -670,7 +683,7 @@ document.addEventListener('input',e=>{const t=e.target,D=t.dataset;
  else if(D.f==='cmv'){CMV[D.k]=t.value}
  else if(D.f==='ww'||D.f==='wr'){const x=S.active.ex[+D.i].warm[+D.j];x[D.f==='ww'?'w':'r']=t.value;x.t=true;save()}
  else if(D.f==='csq'){CSQ=t.value;$('#clist').innerHTML=cListHTML()}
- else if(D.f==='cmin'||D.f==='ckm'){S.active.cardio[+D.i][D.f==='cmin'?'min':'km']=t.value;save()}
+ else if(D.f==='cmin'||D.f==='ckm'){const c=S.active.cardio[+D.i];c[D.f==='cmin'?'min':'km']=t.value;if(D.f==='cmin'){c.acc=(+t.value||0)*60000;if(c.t0)c.t0=Date.now();const el=document.querySelector('[data-ct="'+D.i+'"]');if(el)el.textContent=fmtT(c.acc)}save()}
  else if(D.f==='note'){S.active.ex[+D.i].note=t.value;save()}
  else if(D.f==='pn'){P(D.p).name=t.value;save()}});
 document.addEventListener('change',e=>{const D=e.target.dataset;if(D.f==='pe'){pe=e.target.value;render()}else if(D.f==='xrest'){const n=D.n;S.xs[n]=S.xs[n]||{};S.xs[n].rest=e.target.value?+e.target.value:null;saveXS(n)}});
