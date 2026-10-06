@@ -170,6 +170,8 @@ nav button.on{color:var(--ac)}
 @keyframes pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--ac) 55%,transparent)}70%{box-shadow:0 0 0 8px transparent}100%{box-shadow:0 0 0 0 transparent}}
 .legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px;font-size:14px}
 .lg i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+.edx{padding:10px 0;border-top:.5px solid var(--ln)}
+.edx:first-child{border-top:0}
 </style>
 </head>
 <body>
@@ -539,11 +541,34 @@ const fdl=t=>new Date(t).toLocaleDateString(undefined,{weekday:'short',day:'nume
 function viewProg(){
  const tabs=`<div class="chips seg"><button class="${pv==='ex'?'on':''}" data-a="pv" data-v="ex">Exercises</button><button class="${pv==='wk'?'on':''}" data-a="pv" data-v="wk">Workouts</button></div>`;
  return pv==='wk'?viewWk(tabs):viewEx0().replace('</h1>','</h1>'+tabs)}
+let EDW=null,WKMSG='';
+const wkMsg=m=>{WKMSG=m;setTimeout(()=>{WKMSG='';if(tab==='prog')render()},4000)};
+function openEdit(id){const w=S.workouts.find(x=>x.id===id);if(!w)return;const f=x=>({a:+(x.w-(x.bw||0)).toFixed(2),r:x.r,bw:x.bw||0});
+ EDW={id,eq:-1,msg:'',ex:w.ex.map(e=>({on:e.name,name:e.name,note:e.note||'',sets:e.sets.map(x=>({...f(x),side:x.side||null})),warm:(e.warm||[]).map(f)})),cardio:(w.cardio||[]).map(c=>({name:c.name,min:c.min,km:c.km==null?'':c.km}))};OPEN[id]=true}
+function edRow(i,j,g,x,lab){return `<div class="set"><b class="sd">${lab}</b><input inputmode="decimal" placeholder="kg" value="${x.a}" data-f="ed" data-g="${g}" data-k="a" data-i="${i}" data-j="${j}" aria-label="Weight"><input inputmode="numeric" placeholder="reps" value="${x.r}" data-f="ed" data-g="${g}" data-k="r" data-i="${i}" data-j="${j}" aria-label="Reps"><button class="d" data-a="edrmset" data-g="${g}" data-i="${i}" data-j="${j}" aria-label="Remove set">✕</button></div>`}
+function edEx(e,i){const cur=equipOf(e.name),sided=e.sets.some(y=>y.side);
+ return `<div class="edx"><div class="row sp"><h3>${esc(base(e.name))}${cur?`<span class="eq">${cur}</span>`:''}</h3><button class="hb" data-a="edrmex" data-i="${i}" aria-label="Remove exercise">✕</button></div>
+ <div class="row sp srow" data-a="edeqo" data-i="${i}" style="cursor:pointer"><span>Equipment</span><span class="mut">${cur||'None'} ›</span></div>
+ ${EDW.eq===i?`<div class="eqgrid">${EQL.map(([q,ic])=>`<button class="eqb ${(q===cur||(q==='None'&&!cur))?'on':''}" data-a="edeq" data-i="${i}" data-e="${esc(q)}">${ic}<span>${q}</span></button>`).join('')}</div><button class="w" style="margin-bottom:10px" data-a="edall" data-i="${i}">Apply to all my past "${esc(e.on)}" workouts</button>`:''}
+ ${e.warm.map((x,j)=>edRow(i,j,'w',x,'W')).join('')}${e.sets.map((x,j)=>edRow(i,j,'s',x,sided?(Math.floor(j/2)+1)+(x.side||''):j+1)).join('')}
+ <div class="setbtns"><button data-a="edaddset" data-i="${i}">+ Add set</button><button data-a="edaddwarm" data-i="${i}">+ Warm-up</button></div>
+ <input placeholder="Note for this exercise" data-f="edn" data-i="${i}" value="${esc(e.note)}" style="margin-top:10px"></div>`}
+function editHTML(){const E=EDW;
+ return `<div class="mn" style="margin-top:12px">${E.msg?`<div class="tip" style="margin:0 0 8px">${esc(E.msg)}</div>`:''}${E.ex.map(edEx).join('')}
+ ${E.cardio.map((c,j)=>`<div class="edx"><div class="row sp"><h3>${esc(c.name)}</h3><button class="hb" data-a="edrmc" data-j="${j}" aria-label="Remove cardio">✕</button></div><div class="grid"><div><div class="mut" style="margin:6px 0 4px">Minutes</div><input inputmode="decimal" data-f="edc" data-k="min" data-j="${j}" value="${c.min}"></div><div><div class="mut" style="margin:6px 0 4px">Distance (km)</div><input inputmode="decimal" data-f="edc" data-k="km" data-j="${j}" value="${c.km}"></div></div></div>`).join('')}
+ <div class="edx"><div class="row"><input list="exl2" id="edn2" placeholder="Add an exercise"><button class="p" data-a="edaddex">Add</button></div><datalist id="exl2">${[...new Set([...names().map(base),...COMMON])].map(n=>`<option value="${esc(n)}">`).join('')}</datalist></div>
+ <button class="p w" data-a="edsave">Save changes</button><button class="w" style="margin-top:8px" data-a="edcancel">Cancel</button></div>`}
+async function edSave(){const E=EDW,w=S.workouts.find(x=>x.id===E.id);if(!w)return;const num=x=>x===''||x==null?0:+x;
+ const ex=E.ex.map(e=>({name:e.name,note:(e.note||'').trim(),sets:e.sets.filter(x=>num(x.r)>0).map(x=>({w:num(x.a)+x.bw,r:num(x.r),bw:x.bw,side:x.side||null})),warm:e.warm.filter(x=>num(x.r)>0).map(x=>({w:num(x.a)+x.bw,r:num(x.r),bw:x.bw}))})).filter(e=>e.sets.length);
+ const cardio=E.cardio.map(c=>({name:c.name,min:num(c.min),km:c.km===''||c.km==null?null:+c.km})).filter(c=>c.min>0);
+ if(!ex.length&&!cardio.length)return alert('A workout needs at least one set or cardio entry. Delete the workout instead.');
+ w.ex=ex;w.cardio=cardio;EDW=null;save();render();
+ const r=await pushWorkout(w,[]);wkMsg(r===true?'Workout updated':r==='queued'?'Updated offline. It will upload when you are back online':'Saved on this phone only. Upload failed');render()}
 function viewWk(tabs){const W=[...S.workouts].reverse();
- return `<h1>Progress</h1>${tabs}`+(W.length?W.map(w=>{
+ return `<h1>Progress</h1>${tabs}${WKMSG?`<div class="card tip" style="text-align:center">✓ ${WKMSG}</div>`:''}`+(W.length?W.map(w=>{
   const vol=w.ex.reduce((a,e)=>a+e.sets.reduce((b,x)=>b+x.w*x.r,0),0),n=w.ex.reduce((a,e)=>a+e.sets.length,0),o=OPEN[w.id];
   return `<div class="card"><div class="row sp" data-a="wkopen" data-id="${w.id}" style="cursor:pointer"><div><h3>${esc(w.plan||'Workout')}</h3><div class="mut">${fdl(w.date)} · ${n} sets · ${Math.round(vol).toLocaleString()} kg${(w.cardio||[]).length?' · '+w.cardio.reduce((q,c)=>q+c.min,0)+' min cardio':''}</div></div><span class="mut">${o?'−':'+'}</span></div>`
-  +(o?`<div class="hx" style="margin-top:12px">${w.ex.map(e=>`<div style="display:block;padding:6px 0"><b>${esc(e.name)}</b><br><span class="mut">${fs(e.sets)}</span>${e.warm&&e.warm.length?`<br><span class="mut">Warm-up: ${fs(e.warm)}</span>`:''}${e.note?`<br><span class="mut">Note: ${esc(e.note)}</span>`:''}</div>`).join('')}${(w.cardio||[]).map(c=>`<div style="display:block;padding:6px 0"><b>${esc(c.name)}</b><br><span class="mut">${c.min} min${c.km?' · '+c.km+' km':''}</span></div>`).join('')}</div><button class="d w" style="margin-top:12px" data-a="wkdel" data-id="${w.id}">Delete workout</button>`:'')+'</div>'}).join(''):'<div class="card mut">No workouts logged yet.</div>')}
+  +(o?(EDW&&EDW.id===w.id?editHTML():`<div class="hx" style="margin-top:12px">${w.ex.map(e=>`<div style="display:block;padding:6px 0"><b>${esc(e.name)}</b><br><span class="mut">${fs(e.sets)}</span>${e.warm&&e.warm.length?`<br><span class="mut">Warm-up: ${fs(e.warm)}</span>`:''}${e.note?`<br><span class="mut">Note: ${esc(e.note)}</span>`:''}</div>`).join('')}${(w.cardio||[]).map(c=>`<div style="display:block;padding:6px 0"><b>${esc(c.name)}</b><br><span class="mut">${c.min} min${c.km?' · '+c.km+' km':''}</span></div>`).join('')}</div><div class="setbtns" style="margin-top:12px"><button data-a="wkedit" data-id="${w.id}">Edit workout</button><button class="d" data-a="wkdel" data-id="${w.id}">Delete workout</button></div>`):'')+'</div>'}).join(''):'<div class="card mut">No workouts logged yet.</div>')}
 async function delWk(id){if(!navigator.onLine)return alert('You need a connection to delete a workout.');if(!confirm('Delete this workout? This cannot be undone.'))return;
  const r=await sb.from('workouts').delete().eq('id',id);if(r.error)return fail(r.error);
  S.workouts=S.workouts.filter(w=>w.id!==id);save();render()}
@@ -715,6 +740,21 @@ document.addEventListener('click',e=>{
  else if(a==='pseteq'){const p=P(D.p),old=D.n,b=base(old),nn=D.e==='None'?b:b+' ('+D.e+')',ix=p.ex.indexOf(old);
   if(ix>=0&&nn!==old){p.ex[ix]=nn;if(p.ln){const j2=p.ln.indexOf(old);if(j2>=0)p.ln[j2]=nn}delete PX[p.id+'|'+old];delete PEO[p.id+'|'+old];PX[p.id+'|'+nn]=true}
   save();render()}
+ else if(a==='wkedit'){openEdit(D.id);render()}
+ else if(a==='edcancel'){EDW=null;render()}
+ else if(a==='edsave')edSave();
+ else if(a==='edeqo'){EDW.eq=EDW.eq===i?-1:i;render()}
+ else if(a==='edeq'){const e=EDW.ex[i],b=base(e.name);e.name=D.e==='None'?b:b+' ('+D.e+')';EDW.eq=-1;render()}
+ else if(a==='edall'){const e=EDW.ex[i],old=e.on,nn=e.name;if(old===nn){alert('Choose different equipment first.');return}
+  const hit=S.workouts.filter(w=>w.ex.some(x=>x.name===old));
+  if(!confirm('Change "'+old+'" to "'+nn+'" in '+hit.length+' workout'+(hit.length>1?'s':'')+'?'))return;
+  hit.forEach(w=>{w.ex.forEach(x=>{if(x.name===old)x.name=nn});pushWorkout(w,[])});EDW.ex.forEach(x=>{if(x.on===old)x.on=nn});EDW.msg='Updated '+hit.length+' workout'+(hit.length>1?'s':'');save();render()}
+ else if(a==='edrmex'){const e=EDW.ex[i];if(!confirm('Remove '+base(e.name)+' from this workout?'))return;EDW.ex.splice(i,1);EDW.eq=-1;render()}
+ else if(a==='edrmset'){const e=EDW.ex[i];(D.g==='w'?e.warm:e.sets).splice(j,1);render()}
+ else if(a==='edaddset'){const e=EDW.ex[i],bw=isBW(e.name)?(S.bw||0):0,sd=e.sets.some(y=>y.side);e.sets.push({a:'',r:'',bw,side:sd?'L':null});if(sd)e.sets.push({a:'',r:'',bw,side:'R'});render()}
+ else if(a==='edaddwarm'){const e=EDW.ex[i];e.warm.push({a:'',r:'',bw:isBW(e.name)?(S.bw||0):0});render()}
+ else if(a==='edaddex'){const v=($('#edn2').value||'').trim();if(!v)return;const nm=pickName(v),bw=isBW(nm)?(S.bw||0):0,u=isUni(nm);EDW.ex.push({on:nm,name:nm,note:'',sets:u?[{a:'',r:'',bw,side:'L'},{a:'',r:'',bw,side:'R'}]:[{a:'',r:'',bw,side:null}],warm:[]});render()}
+ else if(a==='edrmc'){EDW.cardio.splice(j,1);render()}
  else if(a==='h2ho'){H2H.open=!H2H.open;if(H2H.open&&H2H.list===null)loadH2H();else render()}
  else if(a==='h2hm'){H2H.m=D.v;render()}
  else if(a==='livetog'){const on=!liveOn();try{localStorage.setItem('gymbros.live',on?'1':'0')}catch(e){}if(!on)liveClear();else liveSend(true);render()}
@@ -755,6 +795,9 @@ document.addEventListener('input',e=>{const t=e.target,D=t.dataset;
  else if(D.f==='ww'||D.f==='wr'){const x=S.active.ex[+D.i].warm[+D.j];x[D.f==='ww'?'w':'r']=t.value;x.t=true;save()}
  else if(D.f==='csq'){CSQ=t.value;$('#clist').innerHTML=cListHTML()}
  else if(D.f==='cmin'||D.f==='ckm'){const c=S.active.cardio[+D.i];if(D.f==='ckm')c.km=t.value;else{const ms=parseT(t.value);c.acc=ms;c.min=cmin(ms);if(c.t0)c.t0=Date.now();const el=document.querySelector('[data-ct="'+D.i+'"]');if(el)el.textContent=fmtT(ms)}save()}
+ else if(D.f==='ed'){const e=EDW.ex[+D.i];(D.g==='w'?e.warm:e.sets)[+D.j][D.k]=t.value}
+ else if(D.f==='edn'){EDW.ex[+D.i].note=t.value}
+ else if(D.f==='edc'){EDW.cardio[+D.j][D.k]=t.value}
  else if(D.f==='note'){S.active.ex[+D.i].note=t.value;save()}
  else if(D.f==='pn'){P(D.p).name=t.value;save()}});
 document.addEventListener('change',e=>{const D=e.target.dataset;if(D.f==='pe'){pe=e.target.value;render()}else if(D.f==='cmin'){const c=S.active.cardio[+D.i];e.target.value=cms(c)>0?fmtT(cms(c)):'';render()}else if(D.f==='h2he'){H2H.ex=e.target.value;loadH2Hrows()}else if(D.f==='xrest'){const n=D.n;S.xs[n]=S.xs[n]||{};S.xs[n].rest=e.target.value?+e.target.value:null;saveXS(n)}});
