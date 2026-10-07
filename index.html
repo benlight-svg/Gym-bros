@@ -176,6 +176,7 @@ input[type=date]{-webkit-appearance:none;appearance:none;display:block;box-sizin
 input[type=date]::-webkit-date-and-time-value{text-align:left;margin:0;min-height:1.2em}
 input[type=date]::-webkit-calendar-picker-indicator{margin:0}
 .rr{width:62px;text-align:center;padding:0 6px}
+.card>.row.sp+.set{margin-top:12px}
 </style>
 </head>
 <body>
@@ -423,8 +424,8 @@ function exCard(e,i){const a=S.active,l=last(e.name),B=isBW(e.name),uni=isUni(e.
  return `<div class="card${grp?' ss':''}">
  ${grp?`<div class="tip" style="margin:0 0 6px">${e.ln?'Superset · straight on to the next exercise':'Superset · last exercise of the pair'}</div>`:''}
  <div class="row sp"><h3>${esc(base(e.name))}${eq?`<span class="eq">${eq}</span>`:''}</h3><span class="row"><button class="hb" data-a="hx" data-i="${i}" aria-label="Show previous sessions">${HICON}</button><button class="hb" data-a="mn" data-i="${i}" aria-label="Exercise options">${DOTS}</button></span></div>
- <div class="mut">${l?'Last time: '+fs(l):'First time logging this'}${B?' · bodyweight: enter extra kg':''}</div>
- ${(()=>{const x=S.xs[base(e.name)]||{};return x.rmax||x.rmin?`<div class="mut">Target: ${x.rmin&&x.rmax?x.rmin+'–'+x.rmax+' reps':x.rmax?'up to '+x.rmax+' reps':x.rmin+'+ reps'}. Add weight when every set reaches ${repMax(e.name)}.</div>`:''})()}${le&&le.note?`<div class="mut">Last note: ${esc(le.note)}</div>`:''}
+ 
+ ${le&&le.note?`<div class="mut">Last note: ${esc(le.note)}</div>`:''}
  ${HX[e.name]?hxPanel(e.name):''}${MN===i?menuPanel(e,i):''}
  ${(e.warm||[]).map((s,j)=>`<div class="set wu"><b>W</b><input inputmode="decimal" placeholder="${s.pw!==undefined?s.pw:(B?'+kg':'kg')}" value="${s.w}" data-f="ww" data-i="${i}" data-j="${j}" aria-label="Warm-up weight"><input inputmode="numeric" placeholder="${s.pr!==undefined?s.pr:'reps'}" value="${s.r}" data-f="wr" data-i="${i}" data-j="${j}" aria-label="Warm-up reps"><button class="${s.d?'on':''}" data-a="wtick" data-i="${i}" data-j="${j}" aria-label="Mark warm-up done">✓</button><button class="d" data-a="rmwarm" data-i="${i}" data-j="${j}" aria-label="Remove warm-up set">✕</button></div>`).join('')}
  ${e.sets.map((s,j)=>`<div class="set${uni&&s.side==='R'?' pr2':''}"><b${uni?' class="sd"':''}>${uni?(Math.floor(j/2)+1)+(s.side||''):j+1}</b><input inputmode="decimal" placeholder="${s.pw!==undefined?s.pw+(s.up?' ↑':''):(B?'+kg':'kg')}" value="${s.w}" data-f="w" data-i="${i}" data-j="${j}" aria-label="Weight"><input inputmode="numeric" placeholder="${s.pr!==undefined?s.pr:'reps'}" value="${s.r}" data-f="r" data-i="${i}" data-j="${j}" aria-label="Reps"><button class="${s.d?'on':''}" data-a="tick" data-i="${i}" data-j="${j}" aria-label="Mark set done">✓</button></div>`).join('')}
