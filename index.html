@@ -597,9 +597,52 @@ function cutOv(I){const p=I.p,ds=cutDays(p);if(!ds.length)return'<div class="car
   mt=`<table class="ovmt"><tr><th></th><th>${ks[0]?'Week '+ks[0]:'Start'}</th><th>${one?'Latest':'Week '+ks[ks.length-1]}</th><th>Change</th></tr>${['chest','waist','hips','arms'].map(row).join('')}${wh(s)?`<tr><td>Waist:hip</td><td>${wh(s)}</td><td>${wh(c)||'–'}</td><td>${wh(s)&&wh(c)&&!one?(wh(c)-wh(s)>0?'+':'')+(wh(c)-wh(s)).toFixed(2):'–'}</td></tr>`:''}</table><div class="mut" style="font-size:12px">cm. Compares your first and latest saved check-in.</div>`}
  return `${top}<div class="card"><div class="row sp"><h3>Plan progress</h3><span class="mut">Day ${el} of 56</span></div><div class="ovpb"><b style="width:${(el/56*100).toFixed(0)}%"></b></div></div>
  <div class="card"><h3>Target adherence</h3>${A.map(bar).join('')}</div><div class="card"><h3>Body measurements</h3>${mt}</div>`}
+
+const chFmT=m=>{const s=Math.round(m*60);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
+const chNz=s=>String(s||'').toLowerCase().replace(/[^a-z]/g,''),chParseT=s=>{s=String(s).trim();if(!s)return NaN;if(s.includes(':')){const q=s.split(':');return(+q[0])+(+q[1]||0)/60}return+s.replace(',','.')};
+const CHDEF=[{id:'bench',n:'Bench Press',t:'lift',ex:'Bench Press',mode:'bw',v:1.25,st:1.5,reps:1},{id:'ohp',n:'Shoulder Press',t:'lift',ex:'Overhead Press, Shoulder Press',mode:'bw',v:.75,reps:1},{id:'dip',n:'Dips',t:'lift',ex:'Dip, Dips',mode:'add',v:.25,reps:12},{id:'push',n:'Push-ups',t:'reps',ex:'Push Up, Push-ups, Pushups',v:60,conf:1,note:'in under 2 minutes'},{id:'pull',n:'Strict Pull-ups',t:'reps',ex:'Pull Up',v:15},{id:'plank',n:'Plank Hold',t:'manual',text:'3:30'},{id:'hang',n:'Dead Hang',t:'manual',text:'2 minutes or more'},{id:'ski2',n:'SkiErg 2 km',t:'cardio',mach:'SkiErg',km:2,min:8,tmin:10},{id:'ski5',n:'SkiErg 5 km',t:'cardio',mach:'SkiErg',km:5,min:21.5,tmin:25.5},{id:'farm',n:"Farmer's Carry",t:'lift',ex:"Farmer's Carry, Farmers Carry, Farmer Carry",mode:'bw',v:1,reps:1,conf:1,note:'for 1 minute'}];
+let CHE=false,CHF=null;
+const chKey=()=>'gymbros.ch.'+(ME?ME.id:'x');
+function chLoad(){try{return Object.assign({t:{},s:'ski'},JSON.parse(localStorage.getItem(chKey())||'{}'))}catch(e){return{t:{},s:'ski'}}}
+function chSave(o){try{localStorage.setItem(chKey(),JSON.stringify(o))}catch(e){}}
+function chCtx(){const all=[],cd=[];S.workouts.forEach(w=>{w.ex.forEach(e=>e.sets.forEach(x=>all.push({n:chNz(base(e.name)),w:x.w,r:x.r,bw:x.bw||0})));(w.cardio||[]).forEach(c=>c.km>0&&c.min>0&&cd.push({n:chNz(c.name),km:c.km,min:c.min}))});return{all,cd}}
+function chEval(c,sk,X){const bw=S.bw,ns=String(c.ex||'').split(',').map(chNz).filter(Boolean),sets=X.all.filter(x=>ns.includes(x.n)&&x.r>0),mx=a=>a.length?Math.max(...a):0;
+ if(c.t==='manual')return{tg:c.text||'',label:'Tick when you hit it',pct:0};
+ if(c.t==='cardio'){const alt=!sk&&c.tmin,ms=alt?['treadmill','run']:String(c.mach||'').split(',').map(chNz).filter(Boolean),m=alt?c.tmin:c.min,q=X.cd.filter(d=>ms.some(t=>d.n.includes(t))&&d.km>=c.km).map(d=>d.min/d.km*c.km),b=q.length?Math.min(...q):null;return{tg:c.km+' km in '+chFmT(m)+(alt?' on the treadmill':''),label:b==null?'Nothing logged yet':'Best '+chFmT(b)+' for '+c.km+' km',pct:b==null?0:Math.min(100,m/b*100),done:b!=null&&b<=m+1e-9}}
+ const nt=c.note?' '+c.note:'',R=(tg,b,lab,top)=>{const ok=b>=top.t-1e-9&&b>0;return{tg,label:lab,pct:Math.max(0,Math.min(100,b/top.s*100)),done:ok&&!c.conf,sug:ok&&!!c.conf}};
+ if(c.t==='reps'){const b=mx(sets.map(x=>x.r));return R(c.v+' reps'+nt,b,b?'Best '+b+' reps in a set':'Nothing logged yet',{t:c.v,s:c.v})}
+ const reps=c.reps||1,rs=sets.filter(x=>x.r>=reps),sfx=reps>1?' for '+reps+'+ reps':'';
+ if(c.mode==='kg'){const b=mx(rs.map(x=>x.w));return R(r1(c.v)+' kg'+sfx+nt,b,b?'Best '+r1(b)+' kg':'Nothing logged yet',{t:c.v,s:c.v})}
+ if(!bw)return{tg:c.v+'× body weight',label:'Add your bodyweight on the Train tab first',pct:0};
+ const add=c.mode==='add',b=mx(rs.map(x=>add?x.w-x.bw:x.w));
+ return R((add?'+':'')+r1(c.v*bw)+' kg'+(c.st&&!add?' to '+r1(c.st*bw)+' kg':'')+(add?' added':'')+sfx+nt,b,b>0?'Best '+(add?'+':'')+r1(b)+' kg'+(add?'':' ('+(b/bw).toFixed(2)+'× body weight)'):'Nothing logged yet',{t:c.v*bw,s:(c.st&&!add?c.st:c.v)*bw})}
+function chForm(f){const I=(k,l,ph)=>`<label class="mut" style="display:block;margin-top:10px">${l}<input id="chf-${k}" value="${esc(f[k]==null?'':f[k])}" placeholder="${esc(ph||'')}" style="width:100%;margin-top:4px"></label>`,t=f.t,ty=[['lift','Lift'],['reps','Max reps'],['cardio','Cardio'],['manual','Manual']];
+ return `<div class="card"><h3>${CHF.isNew?'New challenge':'Edit challenge'}</h3><div class="chips seg" style="margin-top:8px">${ty.map(x=>`<button class="${t===x[0]?'on':''}" data-a="chtype" data-v="${x[0]}">${x[1]}</button>`).join('')}</div>${I('n','Name','e.g. Bench Press')}
+ ${t==='manual'?I('text','Target','e.g. 3:30 plank'):t==='cardio'?I('mach','Machine','e.g. SkiErg')+I('km','Distance (km)','e.g. 2')+I('min','Target time','e.g. 8:00')+I('tmin','Treadmill equivalent time (optional)','e.g. 10:00'):I('ex','Exercise name (comma separate alternatives)','e.g. Bench Press')+(t==='lift'?`<label class="mut" style="display:block;margin-top:10px">Target type<select id="chf-mode" style="width:100%;margin-top:4px"><option value="bw" ${f.mode==='bw'?'selected':''}>× body weight</option><option value="add" ${f.mode==='add'?'selected':''}>Added weight × body weight (dips, pull-ups)</option><option value="kg" ${f.mode==='kg'?'selected':''}>Weight in kg</option></select></label>`:'')+I('v',t==='reps'?'Target reps':'Target (e.g. 1.25 or 100)','')+(t==='lift'?I('reps','Minimum reps per set','1')+I('st','Stretch target (optional, × body weight)','e.g. 1.5'):'')+`<label class="mut" style="display:flex;gap:8px;align-items:flex-start;margin-top:12px"><input type="checkbox" id="chf-conf" ${f.conf?'checked':''}><span>I'll confirm it myself, because it has a time or condition the app can't see</span></label>`+I('note','Condition shown on the card (optional)','e.g. for 1 minute')}
+ <div class="row sp" style="margin-top:14px;gap:10px"><button data-a="chcancel">Cancel</button><button class="p" data-a="chsave">Save</button></div></div>`}
+function chRead(){const f=CHF;if(!f)return;const g=k=>{const e=document.getElementById('chf-'+k);return e?e.value:undefined};['n','text','mach','km','min','tmin','ex','v','reps','st','note','mode'].forEach(k=>{const v=g(k);if(v!==undefined)f[k]=v});const c=document.getElementById('chf-conf');if(c)f.conf=c.checked}
+function chAct(a,D){const o=chLoad(),L0=()=>(o.c||CHDEF).slice();
+ if(a==='chedit'){CHE=!CHE;CHF=null;render();return true}
+ if(a==='chnew'){CHF={id:'c'+Date.now(),t:'lift',n:'',mode:'bw',reps:'1',isNew:true};render();return true}
+ if(a==='chmod'){const c=L0().find(x=>x.id===D.k);if(c){CHF=Object.assign({},c,{min:c.min!=null?chFmT(c.min):'',tmin:c.tmin!=null?chFmT(c.tmin):'',km:c.km==null?'':String(c.km),v:c.v==null?'':String(c.v),reps:String(c.reps||1),st:c.st?String(c.st):''});render()}return true}
+ if(a==='chcancel'){CHF=null;render();return true}
+ if(a==='chtype'){chRead();CHF.t=D.v;render();return true}
+ if(a==='chdel'){if(confirm('Remove this challenge?')){o.c=L0().filter(x=>x.id!==D.k);delete o.t[D.k];chSave(o);render()}return true}
+ if(a==='chreset'){if(confirm('Reset to the original list of challenges? Your ticks stay saved.')){delete o.c;chSave(o);CHF=null;render()}return true}
+ if(a==='chsave'){chRead();const f=CHF,n=(f.n||'').trim(),num=x=>parseFloat(String(x).replace(',','.')),r={id:f.id,n,t:f.t};
+  if(!n)return alert('Give the challenge a name.'),true;
+  if(f.t==='manual')r.text=(f.text||'').trim();
+  else if(f.t==='cardio'){r.mach=(f.mach||'').trim();const km=num(f.km),m=chParseT(f.min),tm=f.tmin?chParseT(f.tmin):NaN;if(!r.mach||!(km>0)||!(m>0))return alert('Add a machine, a distance in km and a time like 8:00.'),true;r.km=km;r.min=m;if(tm>0)r.tmin=tm}
+  else{r.ex=(f.ex||'').trim();const v=num(f.v);if(!r.ex||!(v>0))return alert('Add the exercise name and a target above 0.'),true;r.v=v;if(f.t==='lift'){r.mode=f.mode||'bw';r.reps=Math.max(1,parseInt(f.reps)||1);const st=num(f.st);if(st>v&&r.mode==='bw')r.st=st}if(f.conf){r.conf=1;if((f.note||'').trim())r.note=f.note.trim()}}
+  const L=L0(),i=L.findIndex(x=>x.id===r.id);if(i>=0)L[i]=r;else L.push(r);o.c=L;chSave(o);CHF=null;render();return true}
+ return false}
+function viewCh(tabs){const o=chLoad(),sk=o.s!=='tread',C=o.c||CHDEF,X=chCtx(),L=C.map(c=>Object.assign({c},chEval(c,sk,X))),hd=`<h1>Progress</h1>${tabs}`,dn=L.filter(c=>c.done||o.t[c.c.id]).length,alt=C.some(c=>c.t==='cardio'&&c.tmin);
+ return `${hd}<div class="card"><div class="row sp"><h3>Challenges</h3><b>${dn} of ${L.length}</b></div><div class="ovpb"><b style="width:${L.length?dn/L.length*100:0}%"></b></div><div class="row sp" style="margin-top:12px;gap:10px"><button data-a="chedit">${CHE?'Done editing':'Edit challenges'}</button>${CHE?'<button class="p" data-a="chnew">Add challenge</button>':''}</div>${CHE?'<div style="margin-top:10px"><button data-a="chreset">Reset to original list</button></div>':''}</div>
+ ${CHF?chForm(CHF):''}${alt?`<div class="card"><div class="row sp"><span>Cardio challenge machine</span></div><div class="chips seg" style="margin-top:8px"><button class="${sk?'on':''}" data-a="chsw" data-v="ski">Original</button><button class="${sk?'':'on'}" data-a="chsw" data-v="tread">Treadmill</button></div><div class="mut" style="font-size:12px;margin-top:6px">${sk?'Switch to Treadmill to use the running equivalent times.':'Using the treadmill equivalent times. Runs on the treadmill or outdoors count.'}</div></div>`:''}
+ ${L.map(r=>{const c=r.c,man=!!o.t[c.id],ok=r.done||man,nm=c.t==='cardio'&&!sk&&c.tmin?c.n.replace(/ski\s*erg/i,'Treadmill'):c.n;return `<div class="card"><div class="row sp" style="gap:12px;align-items:flex-start"><div style="flex:1"><h3>${esc(nm)}</h3><div class="mut">${esc(r.tg||'')}</div><div style="margin-top:6px">${esc(r.label)}</div>${r.pct?`<div class="ovpb"><b style="width:${r.pct.toFixed(0)}%"></b></div>`:''}${r.sug&&!ok?'<div class="ovs" style="margin-top:6px">Looks like you hit the number. Tick it once you have confirmed the rest.</div>':''}${r.done?'<div class="ovs" style="margin-top:6px">Completed automatically from your workouts</div>':man?'<div class="ovs" style="margin-top:6px">Ticked manually</div>':''}${CHE?`<div class="row" style="gap:10px;margin-top:10px"><button data-a="chmod" data-k="${c.id}">Edit</button><button data-a="chdel" data-k="${c.id}">Remove</button></div>`:''}</div>${r.done?'<span class="ovv" style="color:var(--ac)">✓</span>':`<button class="${man?'p':''}" data-a="chtick" data-k="${c.id}" aria-label="${man?'Untick':'Tick'} ${esc(c.n)}">${man?'✓ Done':'Tick'}</button>`}</div></div>`}).join('')}${L.length?'':'<div class="card mut">No challenges yet. Tap Edit challenges, then Add challenge.</div>'}`}
 function viewProg(){
- const tabs=`<div class="chips seg"><button class="${pv==='ov'?'on':''}" data-a="pv" data-v="ov">Overview</button><button class="${pv==='ex'?'on':''}" data-a="pv" data-v="ex">Exercises</button><button class="${pv==='wk'?'on':''}" data-a="pv" data-v="wk">Workouts</button></div>`;
- return pv==='ov'?viewOv(tabs):pv==='wk'?viewWk(tabs):viewEx0().replace('</h1>','</h1>'+tabs)}
+ const tabs=`<div class="chips seg"><button class="${pv==='ch'?'on':''}" data-a="pv" data-v="ch">Challenges</button><button class="${pv==='ov'?'on':''}" data-a="pv" data-v="ov">Overview</button><button class="${pv==='ex'?'on':''}" data-a="pv" data-v="ex">Exercises</button><button class="${pv==='wk'?'on':''}" data-a="pv" data-v="wk">Workouts</button></div>`;
+ return pv==='ch'?viewCh(tabs):pv==='ov'?viewOv(tabs):pv==='wk'?viewWk(tabs):viewEx0().replace('</h1>','</h1>'+tabs)}
 let EDW=null,WKMSG='';
 const wkMsg=m=>{WKMSG=m;setTimeout(()=>{WKMSG='';if(tab==='prog')render()},4000)};
 function openEdit(id){const w=S.workouts.find(x=>x.id===id);if(!w)return;const f=x=>({a:+(x.w-(x.bw||0)).toFixed(2),r:x.r,bw:x.bw||0});
@@ -827,7 +870,7 @@ document.addEventListener('click',e=>{
  else if(a==='rmcardio'){S.active.cardio.splice(i,1);save();render()}
  else if(a==='demo')enterDemo();
  else if(a==='sumok'){SUM=null;render()}
- else if(a==='pv'){pv=D.v;render()}
+ else if(a==='pv'){pv=D.v;render()}else if(a&&a.startsWith('ch')&&chAct(a,D)){}else if(a==='chsw'){const o=chLoad();o.s=D.v;chSave(o);render()}else if(a==='chtick'){const o=chLoad();if(o.t[D.k])delete o.t[D.k];else o.t[D.k]=dstr(Date.now());chSave(o);render()}
  else if(a==='wkopen'){OPEN[D.id]=!OPEN[D.id];render()}
  else if(a==='wkdel')delWk(D.id);
  else if(a==='authmode'){AUTH.mode=AUTH.mode==='in'?'up':'in';AUTH.msg='';render()}
