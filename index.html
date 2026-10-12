@@ -182,7 +182,7 @@ input[type=date]::-webkit-calendar-picker-indicator{margin:0}
 .ovt{background:var(--sf);border:1px solid var(--ln);border-radius:14px;padding:12px}
 .ovv{font-size:24px;font-weight:700;color:var(--ink)}.ovl{color:var(--mut);font-size:13px}
 .ovs{font-size:12px;margin-top:2px;color:var(--ac)}.ovs.bad{color:var(--wr)}
-.ovhm{display:grid;grid-template-rows:repeat(7,1fr);grid-auto-flow:column;gap:3px;margin-top:10px}
+.ovhm{display:grid;grid-template-columns:auto repeat(12,1fr);grid-template-rows:repeat(7,1fr);grid-auto-flow:column;gap:3px;margin-top:10px}.ovhm b{display:flex;align-items:center;padding-right:8px;font-size:12px;font-weight:400;color:var(--mut)}
 .ovhm i{aspect-ratio:1;border-radius:3px;background:var(--in)}.ovhm i.on{background:var(--ac)}.ovhm i.f{opacity:.35}
 .ovpb{height:8px;border-radius:4px;background:var(--in);overflow:hidden;margin-top:5px}.ovpb b{display:block;height:100%;background:var(--ac);border-radius:4px}
 .ovlr{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--ln)}
@@ -574,7 +574,7 @@ function viewOv(tabs){const W=S.workouts,hd=`<h1>Progress</h1>${tabs}`;if(!W.len
  M.forEach((a,n)=>{let m=a[0].v;for(let i=1;i<a.length;i++)if(a[i].v>m+.01){prs.push({n,d:a[i].d,g:a[i].v-m,v:a[i].v,w:a[i].top});m=a[i].v}});prs.sort((a,b)=>b.d-a.d);
  return `${hd}<div class="ovg">${OVT('Workouts logged',W.length,wn[11]+' this week')}${OVT('Week streak',st,st?'weeks in a row':'train this week to start one')}${OVT('Avg per week',r1(wn.slice(8).reduce((a,b)=>a+b,0)/4),'last 4 weeks')}${OVT('Volume, 30 days',(v30/1000).toFixed(1)+' t',dv==null?'':(dv>0?'+':'')+dv+'% vs previous 30',dv!=null&&dv<0)}</div>
  <div class="card"><h3>Weekly volume (tonnes)</h3>${ovBars(wv,wl)}</div>
- <div class="card"><h3>Consistency</h3><div class="mut">Last 12 weeks, each column is a week (Mon to Sun).</div><div class="ovhm">${cells.join('')}</div></div>
+ <div class="card"><h3>Consistency</h3><div class="ovhm">${['M','T','W','T','F','S','S'].map(l=>`<b>${l}</b>`).join('')}${cells.join('')}</div></div>
  <div class="card"><h3>Strength trends</h3><div class="mut">Estimated 1RM per session.</div>${L.length?L.map(([n,a])=>{const f=a[0].v,b=Math.max(...a.map(x=>x.v)),g=(b/f-1)*100,hv=Math.max(...a.map(x=>x.top));return `<div class="ovlr"><div><b>${esc(n)}</b><div class="mut">Best ${r1(b)} kg · heaviest ${r1(hv)} kg · ${a.length} sessions</div></div><div style="text-align:right">${ovSpark(a.map(x=>x.v))}<div class="ovs${g<0?' bad':''}">${g>=0?'+':''}${g.toFixed(1)}%</div></div></div>`}).join(''):'<div class="mut" style="margin-top:8px">Log an exercise in two or more workouts to see trends.</div>'}</div>
  <div class="card"><h3>Recent PRs</h3>${prs.length?prs.slice(0,8).map(q=>`<div class="ovlr"><div><b>${esc(base(q.n))}</b><div class="mut">${fdl(q.d)}</div></div><div style="text-align:right"><b>${r1(q.v)} kg</b><div class="ovs">+${r1(q.g)} kg est. 1RM</div></div></div>`).join(''):'<div class="mut" style="margin-top:8px">No PRs yet. They appear when an exercise beats your previous best.</div>'}</div>`}
 function cutDays(p){const o=[];for(let i=1;i<=56;i++){const l=S.cut.logs[addDays(p.start_date,i-1)];if(l)o.push({i,l})}return o}
