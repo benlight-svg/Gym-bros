@@ -1,6 +1,6 @@
 // Gym Bros service worker: keeps the app opening when you have no signal.
-const C = 'gymbros-v20';
-const SHELL = ['./', './index.html', './privacy.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
+const C = 'gymbros-v21';
+const SHELL = ['./', './index.html', './privacy.html', './supabase.js', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(C).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
 });
