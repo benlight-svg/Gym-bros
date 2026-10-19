@@ -412,7 +412,7 @@ function mkSets(name){const l=last(name),u=readyUp(name),un=isUni(name);
 function newEx(name,ln){const l=last(name),u=readyUp(name);return{name,ln:!!ln,note:'',warm:(((lastEx(name)||{}).warm)||[]).map(s=>({w:'',r:'',d:false,pw:s.w-(s.bw||0),pr:s.r})),sets:mkSets(name)}}
 const wk=t=>{const d=new Date(t);d.setHours(0,0,0,0);d.setDate(d.getDate()-((d.getDay()+6)%7));return d.getTime()};
 function streak(){const w=new Set(S.workouts.map(x=>wk(x.date)));let c=wk(Date.now()),n=0;if(!w.has(c))c=wk(c-864e5*3);while(w.has(c)){n++;c=wk(c-864e5*3)}return n}
-function start(id){const p=S.plans.find(x=>x.id===id);MN=-1;EQO=-1;CSH=false;SUM=null;S.active={id:uid(),date:Date.now(),plan:p.name,cardio:[],ex:p.ex.map(n=>newEx(pickName(n),(p.ln||[]).includes(base(n))||(p.ln||[]).includes(n)))};save();liveSend(true);render()}
+function start(id){const p=S.plans.find(x=>x.id===id);MN=-1;EQO=-1;CSH=false;SUM=null;S.active={id:uid(),date:Date.now(),plan:p.name,pid:p.id,cardio:[],ex:p.ex.map(n=>newEx(pickName(n),(p.ln||[]).includes(base(n))||(p.ln||[]).includes(n)))};save();liveSend(true);render()}
 let FLASH='',HX={},MN=-1,PX={},SUM=null,AR={};
 const DOTS='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>';
 const COMMON=['Bench Press','Incline Bench Press','Overhead Press','Barbell Row','Deadlift','Romanian Deadlift','Squat','Front Squat','Leg Press','Hack Squat','Lunges','Hip Thrust','Pull Up','Chin Up','Dip','Push Up','Lat Pulldown','Cable Row','Dumbbell Curl','Hammer Curl','Triceps Extension','Cable Fly','Chest Fly','Lateral Raise','Rear Delt Fly','Face Pull','Calf Raise','Plank','Cable Crunch'];
@@ -481,14 +481,14 @@ function viewLog(){const a=S.active;
  return `<h1>${esc(a.plan)}</h1><div class="mut">Last session's numbers show in grey. Type to log a set, or tick a set to use the grey numbers and start the rest timer. Exercises you skip are left out.</div>
  <div class="row" style="margin-top:8px"><span class="mut">Rest</span><span class="chips seg" style="margin:0;flex:1">${[60,90,120,180].map(v=>`<button class="${(S.rest||90)===v?'on':''}" data-a="rd" data-v="${v}">${v<120?v+'s':v/60+'m'}</button>`).join('')}</span></div>
  ${bwBanner()}${a.ex.map(exCard).join('')}${addExBlock()}${cardioCards()}<button class="w" style="margin-bottom:12px" data-a="cardio">+ Cardio</button>${sheetHTML()}
- <button class="p w" data-a="finish">Finish workout</button>
+ ${planDiffCard(a)}<button class="p w" data-a="finish">Finish workout</button>
  <button class="w d" style="margin-top:8px" data-a="cancel">Discard workout</button>`}
 
 function viewPlans(){return `<h1>Plans</h1>
- ${S.plans.map(p=>`<div class="card"><div class="row" style="margin-bottom:14px"><input value="${esc(p.name)}" data-f="pn" data-p="${p.id}" aria-label="Plan name"><button class="d" data-a="delplan" data-p="${p.id}">Delete</button></div>
+ ${S.plans.map(p=>`<div class="card"><div class="row" style="margin-bottom:14px"><input value="${esc(p.name)}" data-f="pn" data-p="${p.id}" aria-label="Plan name" style="flex:1 1 0;min-width:0;width:auto"><button data-a="shareplan" data-p="${p.id}">Share</button><button class="d" data-a="delplan" data-p="${p.id}">Delete</button></div>
  ${p.ex.map((n,i)=>`<div class="row sp pr"><div data-a="px" data-p="${p.id}" data-n="${esc(n)}" style="flex:1;cursor:pointer"><div>${esc(base(n))}</div>${equipOf(n)?`<div style="margin:4px 0 2px"><span class="eq" style="margin-left:0">${equipOf(n)}</span></div>`:''}<div class="mut" style="font-size:12px">${badges(n,p)}</div></div><span class="row"><button data-a="up" data-p="${p.id}" data-i="${i}" aria-label="Move up">↑</button><button data-a="dn" data-p="${p.id}" data-i="${i}" aria-label="Move down">↓</button><button class="d" data-a="delex" data-p="${p.id}" data-i="${i}" aria-label="Remove">✕</button></span></div>${PX[p.id+'|'+n]?`<div class="mn">${peqPanel(p,n)}${xsHTML(base(n),'pl',p.id,(p.ln||[]).includes(n),n)}</div>`:''}`).join('')}
  <div class="row" style="margin-top:10px"><input placeholder="Add exercise" id="n${p.id}"><button class="p" data-a="addex" data-p="${p.id}">Add</button></div></div>`).join('')}
- ${hxEditor()}<div class="card"><h3>Your bodyweight</h3><div class="row" style="margin-top:10px"><input id="bwp" inputmode="decimal" placeholder="kg" value="${S.bw??''}"><button class="p" data-a="setbwp">Save</button></div><div class="mut" style="margin-top:8px">Used for bodyweight exercises like pull-ups and dips.</div></div>
+ ${planImportCard()}${hxEditor()}<div class="card"><h3>Your bodyweight</h3><div class="row" style="margin-top:10px"><input id="bwp" inputmode="decimal" placeholder="kg" value="${S.bw??''}"><button class="p" data-a="setbwp">Save</button></div><div class="mut" style="margin-top:8px">Used for bodyweight exercises like pull-ups and dips.</div></div>
  <div class="card"><h3>Gym mates</h3><div class="row sp srow"><span>Show when I'm training</span><button class="sw ${liveOn()?'on':''}" data-a="livetog" role="switch" aria-checked="${liveOn()}" aria-label="Show when I am training"></button></div><div class="mut">People in your groups see your workout name, current exercise and sets done while you train.</div></div>
  <div class="card"><h3>Your data</h3><div class="mut" style="margin:8px 0 12px">Download a spreadsheet copy of your logs.</div><button class="w" data-a="expwk">Download workouts (CSV)</button><button class="w" style="margin-top:8px" data-a="expcut">Download fat loss log (CSV)</button></div>
  <button class="w p" data-a="newplan">New plan</button>
@@ -750,6 +750,29 @@ function exR(eq,s,i,j){
  return `<input inputmode="numeric" placeholder="${s.pr!==undefined?s.pr:'reps'}" value="${s.r}" data-f="r" data-i="${i}" data-j="${j}" aria-label="Reps">`}
 function swatch(D){const e=S.active&&S.active.ex[+D.i],x=e&&e.sets[+D.j];if(!x)return;if(x.sw){x.r=String(Math.max(1,Math.round((Date.now()-x.sw)/1000)));delete x.sw}else x.sw=Date.now();S.active.cur=+D.i;save();render()}
 setInterval(()=>{if(!S.active)return;document.querySelectorAll('[data-swl]').forEach(el=>{const q=el.dataset.swl.split('-').map(Number),x=S.active.ex[q[0]]&&S.active.ex[q[0]].sets[q[1]];if(x&&x.sw)el.textContent='■ '+fmtSec((Date.now()-x.sw)/1000)})},500);
+function planOf(a){return S.plans.find(p=>a.pid?p.id===a.pid:p.name===a.plan)}
+function planDiff(a){const p=planOf(a);if(!p)return a.ex.length?'new':null;const exp=p.ex.map(n=>pickName(n)),eln=p.ex.map(n=>(p.ln||[]).includes(base(n))||(p.ln||[]).includes(n));return exp.length===a.ex.length&&exp.every((n,i)=>n===a.ex[i].name&&eln[i]===!!a.ex[i].ln)?null:'changed'}
+function planDiffCard(a){const d=planDiff(a);if(!d)return '';return `<div class="card"><h3>You changed this workout</h3><div class="mut" style="margin:6px 0 12px">${d==='new'?'The plan this came from no longer exists.':'The exercises are different from your plan "'+esc(a.plan)+'".'} Save the changes so next time starts the same way.</div><div class="row" style="gap:10px">${d==='changed'?'<button class="p" data-a="planupd" style="flex:1">Update plan</button>':''}<button data-a="plannew" style="flex:1">Save as new plan</button></div></div>`}
+function planUpd(asNew){const a=S.active;if(!a)return;const ex=a.ex.map(e=>e.name),ln=a.ex.filter(e=>e.ln).map(e=>e.name);
+ if(asNew){const nm=(prompt('Name for the new plan',a.plan+' (new)')||'').trim();if(!nm)return;const p={id:uid(),name:nm,ex,ln};S.plans.push(p);a.pid=p.id;a.plan=nm}
+ else{const p=planOf(a);if(!p)return;if(!confirm('Update "'+p.name+'" to match this workout?'))return;p.ex=ex;p.ln=ln;a.pid=p.id}
+ save();syncPlans();render()}
+function planImportCard(){return `<div class="card"><h3>Import a plan</h3><div class="mut" style="margin:6px 0 10px">Got a code or link from a friend? Enter the code here to copy their plan into yours.</div><div class="row" style="gap:8px"><input id="impcode" placeholder="Plan code" autocapitalize="characters" autocomplete="off" style="flex:1 1 0;min-width:0;width:auto"><button class="p" data-a="impplan">Import</button></div></div>`}
+async function sharePlan(id){const p=S.plans.find(x=>x.id===id);if(!p)return;if(!p.ex.length){alert('Add some exercises to this plan first.');return}
+ if(ME.id==='demo'||!navigator.onLine){alert('You need to be signed in and online to share a plan.');return}
+ const items=p.ex.map(n=>({n,ln:(p.ln||[]).includes(base(n))||(p.ln||[]).includes(n)})),r=await sb.rpc('share_plan',{p_name:p.name,p_ex:items});
+ if(r.error){alert(/function|schema cache|does not exist/i.test(r.error.message)?'Plan sharing is not set up yet. Run the new SQL in Supabase.':'Could not share this plan: '+r.error.message);return}
+ const code=r.data,url=location.origin+location.pathname+'?plan='+code,text='Try my "'+p.name+'" plan on Gym Bros. Code: '+code;
+ try{if(navigator.share){await navigator.share({title:p.name,text,url});return}}catch(e){if(e&&e.name==='AbortError')return}
+ try{await navigator.clipboard.writeText(text+'\n'+url);alert('Link copied. It works for 30 days.\nCode: '+code)}catch(e){prompt('Copy this link to share your plan',url)}}
+async function importPlan(code){code=String(code||'').trim().toUpperCase();if(!code)return;if(ME.id==='demo'||!navigator.onLine){alert('You need to be signed in and online to import a plan.');return}
+ const r=await sb.rpc('get_shared_plan',{p_code:code});if(r.error&&!/not found|expired|invalid/i.test(r.error.message)){alert(/function|schema cache|does not exist/i.test(r.error.message)?'Plan sharing is not set up yet.':'Could not import: '+r.error.message);return}
+ if(r.error||!r.data||!r.data.length){alert('That code was not found, or it has expired.');return}
+ const d=r.data[0],ex=(Array.isArray(d.exercises)?d.exercises:[]).filter(x=>x&&x.n).slice(0,60).map(x=>({n:String(x.n).slice(0,80),ln:!!x.ln}));if(!ex.length){alert('That plan is empty.');return}
+ if(!confirm('Add "'+d.name+'"'+(d.owner_name?' from '+d.owner_name:'')+' ('+ex.length+' exercises) to your plans?'))return;
+ let nm=String(d.name||'Shared plan').slice(0,80);if(S.plans.some(p=>p.name===nm))nm+=' (shared)';
+ S.plans.push({id:uid(),name:nm,ex:ex.map(x=>x.n),ln:ex.filter(x=>x.ln).map(x=>x.n)});save();syncPlans();tab='plans';render()}
+(function(){const c=new URLSearchParams(location.search).get('plan');if(!c)return;const t=setInterval(()=>{if(typeof ME!=='undefined'&&ME&&ME.id&&ME.id!=='demo'&&S&&S.plans){clearInterval(t);try{history.replaceState(null,'',location.pathname)}catch(e){}importPlan(c)}},500);setTimeout(()=>clearInterval(t),20000)})();
 function viewProg(){
  const tabs=`<div class="chips seg"><button class="${pv==='ov'?'on':''}" data-a="pv" data-v="ov">Overview</button><button class="${pv==='ex'?'on':''}" data-a="pv" data-v="ex">Exercises</button><button class="${pv==='wk'?'on':''}" data-a="pv" data-v="wk">Workouts</button><button class="${pv==='ch'?'on':''}" data-a="pv" data-v="ch">Challenges</button></div>`;
  return pv==='ch'?viewCh(tabs):pv==='ov'?viewOv(tabs):pv==='wk'?viewWk(tabs):viewEx0().replace('</h1>','</h1>'+tabs)}
@@ -980,7 +1003,7 @@ document.addEventListener('click',e=>{
  else if(a==='rmcardio'){S.active.cardio.splice(i,1);save();render()}
  else if(a==='demo')enterDemo();
  else if(a==='sumok'){SUM=null;render()}
- else if(a==='pv'){pv=D.v;render()}else if(a&&a.startsWith('ch')&&chAct(a,D)){}else if(a&&a.startsWith('hx')&&hxAct(a,D)){}else if(a==='delacct'){delAccount()}else if(a==='swatch'){swatch(D)}else if(a==='chsw'){const o=chLoad();o.s=D.v;chSave(o);render()}else if(a==='chtick'){const o=chLoad();if(o.t[D.k])delete o.t[D.k];else o.t[D.k]=dstr(Date.now());chSave(o);render()}
+ else if(a==='pv'){pv=D.v;render()}else if(a&&a.startsWith('ch')&&chAct(a,D)){}else if(a&&a.startsWith('hx')&&hxAct(a,D)){}else if(a==='delacct'){delAccount()}else if(a==='swatch'){swatch(D)}else if(a==='shareplan'){sharePlan(D.p)}else if(a==='impplan'){const f=$('#impcode');importPlan(f&&f.value)}else if(a==='planupd'){planUpd(false)}else if(a==='plannew'){planUpd(true)}else if(a==='chsw'){const o=chLoad();o.s=D.v;chSave(o);render()}else if(a==='chtick'){const o=chLoad();if(o.t[D.k])delete o.t[D.k];else o.t[D.k]=dstr(Date.now());chSave(o);render()}
  else if(a==='wkopen'){OPEN[D.id]=!OPEN[D.id];render()}
  else if(a==='wkdel')delWk(D.id);
  else if(a==='authmode'){AUTH.mode=AUTH.mode==='in'?'up':'in';AUTH.msg='';render()}
