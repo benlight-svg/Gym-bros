@@ -192,26 +192,133 @@ button,nav{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
 .big,.ctimer,#hxc,#hxs{font-variant-numeric:tabular-nums}
 .chk,button.chk{display:inline-flex;align-items:center;justify-content:flex-end;width:44px;min-width:44px;height:44px;min-height:44px;padding:0;margin:0;flex:none;font-size:24px;font-weight:700;line-height:1;color:var(--ac);background:none;border:0;border-radius:0}
 @media (prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
-/* Desktop layout: side navigation and a wider centred column. Phones are untouched. */
+/* ===== Loading spinner ===== */
+.spin{position:fixed;top:50%;left:50%;width:44px;height:44px;margin:-22px 0 0 -22px;border:4px solid var(--in);border-top-color:var(--ac);border-radius:50%;animation:gbspin .8s linear infinite}
+@keyframes gbspin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation-duration:1.6s!important;animation-iteration-count:infinite!important}}
+/* ===== Desktop shell: sidebar, page header, multi-column screens. Phones keep the markup above untouched. ===== */
+.nbrand,.nfoot{display:none}
 @media (min-width:900px){
- body{padding-bottom:48px}
- body:has(nav:not([hidden])){padding-left:220px}
- body.lgn{padding-left:0!important}
- main{max-width:920px;padding:28px 40px}
- nav{top:0;right:auto;bottom:0;left:0;width:220px;flex-direction:column;justify-content:flex-start;gap:4px;padding:28px 12px;border-top:0;border-right:1px solid var(--ln)}
- nav button{flex:none;flex-direction:row;justify-content:flex-start;gap:14px;padding:12px 16px;font-size:16px;font-weight:600;border-radius:12px}
- nav button svg{width:24px;height:24px}
- nav button:hover{background:var(--in);color:var(--ink)}
- nav button.on{background:var(--in)}
- #rt{left:230px;right:16px;bottom:24px;max-width:560px}
- #tm,#hm{top:18px}#tm{right:24px}#hm{right:74px}
+ :root{--side:248px}
+ html{overflow-x:hidden}
+ body{overflow-x:clip;padding:0 0 64px var(--side)}
+ body.lgn{padding-left:0}
+ body:not(.lgn):has(#rt:not([hidden])){padding-bottom:120px}
+ main{overflow:visible;width:auto;max-width:1240px;margin:0 auto;padding:36px 48px 24px}
+ main[data-view=log],main[data-view=plans]{max-width:1440px}
+ body.lgn main{max-width:460px;padding-top:40px}
+ .authpage .lock{max-width:260px}
+ h1{margin:0}
  button,[data-a],select{cursor:pointer}
- button:not(:disabled):hover{filter:brightness(1.08)}
- .card:hover{border-color:color-mix(in srgb,var(--ln) 70%,var(--ac))}
- h1{margin-top:12px}
- .card svg:not(.lock){max-height:340px}
+ button:not(:disabled):hover{filter:brightness(1.1)}
+ button:active{opacity:.75}
+ input,select{height:40px;font-size:15px}
+ button{min-height:40px;font-size:15px;padding:9px 16px}
+ .set button{width:40px;height:40px}
+ .set button.swb{height:40px}
+ .card{padding:18px}
+ .card:hover{border-color:color-mix(in srgb,var(--ln) 60%,var(--ac))}
+
+ /* sidebar */
+ nav{top:0;right:auto;bottom:0;left:0;width:var(--side);flex-direction:column;justify-content:flex-start;gap:2px;padding:28px 14px 16px;background:var(--nav);-webkit-backdrop-filter:none;backdrop-filter:none;border-top:0;border-right:.5px solid var(--ln);overflow-y:auto}
+ .nbrand{display:block;padding:0 10px 28px}
+ .nbrand .lock-s{display:block;width:100%;max-width:170px;margin:0 auto}
+ nav button{flex:none;flex-direction:row;justify-content:flex-start;gap:14px;min-height:44px;padding:0 14px;font-size:16px;font-weight:600;border-radius:10px;color:var(--mut);text-align:left}
+ nav button svg{width:22px;height:22px;flex:none}
+ nav button:hover{background:var(--in);color:var(--ink);filter:none}
+ nav button.on{background:var(--in);color:var(--ac)}
+ .nfoot{display:flex;align-items:center;gap:10px;margin-top:auto;padding:14px 10px 58px;border-top:.5px solid var(--ln);font-size:14px}
+ .nfoot i{width:32px;height:32px;border-radius:50%;background:var(--in);color:var(--ac);display:grid;place-items:center;font-style:normal;font-weight:700;flex:none}
+ .nfoot span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ #tm{position:fixed;top:auto;right:auto;left:14px;bottom:14px;width:calc(var(--side) - 28px);height:40px;border-radius:10px;justify-content:flex-start;gap:12px;padding:0 14px;background:var(--in);font-size:14px;font-weight:500}
+ #tm svg{width:20px;height:20px}
+ #tm{box-shadow:inset 0 0 0 .5px var(--ln)}
+ #tm::after{content:"Light mode"}
+ :root[data-theme="light"] #tm::after{content:"Dark mode"}
+ body.lgn #tm{left:auto;right:24px;top:20px;bottom:auto;width:42px;height:42px;border-radius:50%;justify-content:center;padding:0}
+ body.lgn #tm::after{content:none}
+ #hm{display:none}
+ body:not(.lgn):has(nav[hidden]) #tm{display:none}
+
+ /* rest timer floats bottom-centre of the content area */
+ #rt{left:calc(var(--side) + (100vw - var(--side))/2);right:auto;transform:translateX(-50%);width:min(520px,calc(100vw - var(--side) - 64px));max-width:none;bottom:24px}
+
+ /* page header */
+ .dhead{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin:0 0 28px;padding-bottom:20px;border-bottom:.5px solid var(--ln)}
+ .dhead h1{font-size:32px}
+ .dhead .mut{margin-top:6px;max-width:68ch}
+ .dhead .chips.seg{margin:0;flex:none;width:min(440px,100%)}
+ .dhead button.w{width:auto;margin:0}
+
+ /* two-column screens: content + sticky rail */
+ .dcols{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:36px;align-items:start}
+ [data-view=log] .dcols{grid-template-columns:minmax(0,1fr) 320px}
+ [data-view=plans] .dcols{grid-template-columns:minmax(0,1fr) 360px}
+ [data-view=hx] .dcols{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px}
+ .drail{position:sticky;top:28px;display:flex;flex-direction:column;gap:14px;min-width:0}
+ [data-view=hx] .drail,[data-view=plans] .drail{position:static}
+ .drail>*,.dmain>.card,.dmain>.tip{margin:0}
+ .dmain{display:flex;flex-direction:column;gap:14px;min-width:0}
+ .drail>.grid{gap:14px}.drail>.grid>.card{margin:0}
+ .drail h2,.dmain h2,.dsec h2{margin:0 0 14px;font-size:19px}
+ .drail>h2{margin:10px 0 -4px}
+ .drail>.w,.drail>button{width:100%;margin:0}
+ .drail>#livebox:empty{display:none}
+ .drail #livebox .card{margin:0 0 14px}
+ .dsec+.dsec,.dmain>.dsec{margin-top:18px}
+
+ /* start-a-workout tiles */
+ .dlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;align-items:stretch}
+ .dlist>.card{margin:0}
+ .dlist>.card.row.sp{flex-direction:column;align-items:stretch;justify-content:space-between;gap:16px;padding:18px;min-height:160px}
+ .dlist>.card.row.sp h3{font-size:19px}
+ .dlist>.card.row.sp>button{width:100%}
+ .dpv{margin-top:8px;font-size:13px;line-height:1.4;color:var(--mut);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+ .dlist.plans{grid-template-columns:repeat(auto-fill,minmax(340px,1fr));align-items:start}
+ .dstack{display:flex;flex-direction:column;gap:14px}
+ .dstack>.card{margin:0}
+
+ /* workout logging */
+ .dxgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;align-items:start}
+ .dxgrid>.card{margin:0}
+ .dxgrid>button.w{grid-column:1/-1}
+ .dses .ovpb{height:8px;margin-top:10px}
+ .drail .dses{margin:0}
+
+ /* generic grids for progress, board, fat loss */
+ .dgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
+ .dgrid>*{margin:0;min-width:0}
+ .dgrid>h2,.dgrid>.ovg,.dgrid>.chips,.dgrid>p,.dgrid>.mut,.dgrid>.tip,.dgrid>button.w,.dgrid>#livebox,.dgrid>div[style]{grid-column:1/-1}
+ .dgrid>h2{margin-top:14px}
+ .dgrid>.chips.seg{max-width:360px}
+ .dgrid>select{max-width:420px;grid-column:1/-1}
+ .dgrid>.card:has(.hx),.dgrid>.card:has(.edx){grid-column:1/-1}
+ .dgrid>button.w{max-width:360px}
+ .ovg{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:0}
+ [data-view=prog-ov] .dgrid,[data-view=prog-ex] .dgrid{grid-template-columns:minmax(0,3fr) minmax(0,2fr)}
+ [data-view=prog-ex] .dgrid>.grid{grid-column:1/-1;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+ .grid>.stat{margin:0}
+
+ .pr .tr{display:inline-block}
+ .drail .row[style*="overflow-x"]{flex-wrap:wrap;overflow:visible!important}
+ .dstack>.card{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:32px;align-items:start}
+ .dstack>.card>:not(.pr){grid-column:1/-1}
+ .dgrid .hx{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:24px}
+ .dmain>.chips.seg,.dmain>button.w{max-width:360px}
+ [data-view=cut] .dgrid{display:block;columns:2;column-gap:16px}
+ [data-view=cut] .dgrid>*{break-inside:avoid;margin:0 0 16px}
+ [data-view=cut] .dgrid>h2,[data-view=cut] .dgrid>.ovg,[data-view=cut] .dgrid>.mut,[data-view=cut] .dgrid>.tip,[data-view=cut] .dgrid>button.w{column-span:all}
+ [data-view=cut] .dgrid>h2{margin-top:10px}
+
+ /* modal instead of bottom sheet */
+ .sheet{align-items:center;justify-content:center}
+ .sbox{width:min(560px,calc(100vw - 64px));max-height:80vh;border-radius:18px;padding:22px}
+ .sback{-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
 }
-@media (min-width:1300px){main{max-width:1020px}}
+@media (min-width:1500px){
+ main{max-width:1320px}
+ main[data-view=log],main[data-view=plans]{max-width:1560px}
+}
 </style>
 </head>
 <body>
@@ -940,12 +1047,84 @@ function h2hHTML(){if(!L.sel)return '';
  else if(!H2H.list.length)body='<div class="mut">No shared exercises yet. Once you and a gym mate have both logged the same exercise (with the same equipment), you can compare it here.</div>';
  else body=`<select data-f="h2he" aria-label="Exercise">${H2H.list.map(x=>`<option ${x===H2H.ex?'selected':''}>${esc(x)}</option>`).join('')}</select><div class="chips seg" style="margin-top:12px">${[['e1','Est. 1RM'],['wt','Top weight'],['vol','Volume']].map(([k,n])=>`<button class="${H2H.m===k?'on':''}" data-a="h2hm" data-v="${k}">${n}</button>`).join('')}</div>${h2hChart()}`;
  return `<h2>Head to head</h2><div class="card">${body}</div><button class="w" data-a="h2ho">Hide head to head</button>`}
+/* ===== Desktop layout: regroups the rendered screen into columns on wide viewports only. ===== */
+const DESK=window.matchMedia('(min-width:900px)');
+const dEl=(t,c,...k)=>{const e=document.createElement(t);e.className=c;k.flat().forEach(x=>x&&e.append(x));return e};
+function deskOrganize(){
+ const v=$('#v'),nav=$('nav');v.removeAttribute('data-view');document.body.dataset.tab=tab;
+ if(!DESK.matches||!READY||!ME||RECOVERY)return;
+ let br=nav.querySelector('.nbrand'),ft=nav.querySelector('.nfoot');
+ if(!br){br=dEl('div','nbrand');nav.prepend(br);ft=dEl('div','nfoot');nav.append(ft)}
+ br.innerHTML=isDark()?LOGOS_D:LOGOS_L;
+ const nm=String(ME.name||ME.email||'');ft.innerHTML=`<i>${esc((nm[0]||'?').toUpperCase())}</i><span>${esc(nm)}</span>`;
+ const all=[...v.children];let kids=all.slice();
+ const take=f=>{const r=kids.filter(f);kids=kids.filter(k=>!f(k));return r};
+ const head=()=>{const h=kids.find(k=>k.tagName==='H1');if(!h)return null;const nx=kids[kids.indexOf(h)+1],tb=nx&&nx.matches('.chips.seg')?nx:null;kids=kids.filter(k=>k!==h&&k!==tb);return dEl('div','dhead',dEl('div','dt',h),tb)};
+ const hx=hxRun();
+ const view=tab==='train'?(hx?'hx':S.active?'log':'home'):tab==='prog'?'prog-'+pv:tab;
+ let out=[];
+ if(view==='home'){
+  take(k=>k.matches('svg.lock')).forEach(x=>x.remove());
+  const d=new Date(),hr=d.getHours(),g=hr<12?'Good morning':hr<18?'Good afternoon':'Good evening',n1=String(ME.name||'').split(' ')[0];
+  const hd=dEl('div','dhead');hd.innerHTML=`<div class="dt"><h1>${g}${n1?', '+esc(n1):''}</h1><div class="mut">${d.toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'})}</div></div>`;
+  const main=dEl('div','dmain'),rail=dEl('div','drail');let list=null;
+  kids.forEach(k=>{
+   if(k.tagName==='H2'){const s=dEl('section','dsec',k);list=dEl('div','dlist');s.append(list);main.append(s);return}
+   if(list){list.append(k);return}
+   if(k.id==='livebox'||k.matches('.grid')){rail.append(k);return}
+   if(k.matches('.tip')||k.querySelector('[data-a=sumok]')||(k.matches('.card')&&/^✓/.test(k.textContent.trim()))){main.append(k);return}
+   rail.append(k)});
+  main.querySelectorAll('[data-a=start]').forEach(b=>{const p=S.plans.find(x=>x.id===b.dataset.p),t=b.closest('.card')&&b.closest('.card').firstElementChild;
+   if(p&&t&&p.ex.length){const nms=p.ex.map(base),d=dEl('div','dpv');d.textContent=nms.slice(0,4).join(', ')+(nms.length>4?' +'+(nms.length-4)+' more':'');t.append(d)}});
+  out=[hd,dEl('div','dcols',main,rail)];
+ }else if(view==='log'){
+  const hd=head(),intro=take(k=>k.matches('.mut'))[0];
+  if(intro)hd.firstChild.append(intro);
+  const a=S.active,sets=a.ex.flatMap(e=>e.sets),dn=sets.filter(s=>s.d).length;
+  const sheet=take(k=>k.classList.contains('sheet'));
+  const ex=take(k=>k.matches('.card')&&k.querySelector('[data-a=addset]'));
+  const rest=take(k=>k.matches('.row')&&k.querySelector('[data-a=rd]'));
+  const fin=take(k=>k.matches('[data-a=finish]')),dis=take(k=>k.matches('[data-a=cancel]')),cb=take(k=>k.matches('[data-a=cardio]'));
+  const chg=take(k=>k.matches('.card')&&/You changed/.test(k.textContent));
+  const first=ex.length?all.indexOf(ex[0]):0,bw=take(k=>all.indexOf(k)<first);
+  const ses=dEl('div','card dses');ses.innerHTML=`<div class="row sp"><h3>Session</h3><span class="mut">Started ${new Date(a.date).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span></div><div class="row sp" style="margin-top:12px"><span>Sets done</span><b>${dn} of ${sets.length}</b></div><div class="ovpb"><b style="width:${sets.length?dn/sets.length*100:0}%"></b></div>`;
+  const rc=dEl('div','card',rest);
+  const rail=dEl('div','drail',ses,rc,bw,chg,fin,dis);
+  const main=dEl('div','dmain',dEl('div','dxgrid',ex,kids,cb));
+  out=[hd,dEl('div','dcols',main,rail),sheet];
+ }else if(view==='plans'){
+  const hd=head(),nb=take(k=>k.matches('[data-a=newplan]'));
+  if(nb[0]){nb[0].classList.remove('w');hd.append(dEl('div','dact',nb[0]))}
+  const plans=take(k=>k.matches('.card')&&k.querySelector('[data-f=pn]'));
+  const hh=take(k=>k.tagName==='H2'&&/Hyrox/.test(k.textContent));
+  const hxc=take(k=>k.matches('.card')&&(k.querySelector('[data-f=hxpn]')||k.querySelector('[data-a=hxnew]')));
+  const main=dEl('div','dmain',dEl('div','dlist plans',plans));
+  if(hh.length)main.append(dEl('section','dsec',hh,dEl('div','dstack',hxc)));
+  out=[hd,dEl('div','dcols',main,dEl('div','drail',kids))];
+ }else if(view==='hx'){
+  const hd=head(),c=kids.filter(k=>k.matches('.card'));
+  out=c.length===3?[hd,dEl('div','dcols',dEl('div','dmain',c[0],c[1]),dEl('div','drail',c[2]))]:[hd,dEl('div','dgrid',kids)];
+ }else if(view==='board'&&BV==='g'&&L.sel&&L.rows){
+  const hd=head(),main=dEl('div','dmain'),rail=dEl('div','drail');let inR=false;
+  kids.forEach(k=>{
+   if(k.id==='livebox'||k.matches('[data-a=h2ho]')){rail.append(k);return}
+   if(k.tagName==='H2'){inR=true;rail.append(k);return}
+   if(inR&&(k.matches('.card')||k.matches('button.w'))){rail.append(k);return}
+   inR=false;main.append(k)});
+  out=[hd,dEl('div','dcols',main,rail)];
+ }else{
+  const hd=head();out=[hd,dEl('div','dgrid',kids)];
+ }
+ v.replaceChildren(...out.flat().filter(Boolean));
+ v.dataset.view=view;
+}
+
 function render(){if(!S.active&&rend)rtStop();
- $('#v').innerHTML=!READY?'<p class="mut">Loading…</p>':RECOVERY&&ME?viewReset():!ME?viewAuth():tab==='train'?(hxRun()?viewHx():S.active?viewLog():viewHome()):tab==='plans'?viewPlans():tab==='board'?viewBoard():tab==='cut'?viewCut():viewProg();
+ $('#v').innerHTML=!READY?'<div class="spin" role="status" aria-label="Loading"></div>':RECOVERY&&ME?viewReset():!ME?viewAuth():tab==='train'?(hxRun()?viewHx():S.active?viewLog():viewHome()):tab==='plans'?viewPlans():tab==='board'?viewBoard():tab==='cut'?viewCut():viewProg();
  if($('#ae'))$('#ae').value=AUTH.e||'';
  if(tab==='cut'&&S.cut&&CL)cutLive();
  $('nav').hidden=!ME||RECOVERY;document.body.classList.toggle('lgn',READY&&(!ME||RECOVERY));$('#hm').hidden=!(ME&&!RECOVERY&&(tab!=='train'||S.active));updOff();ctEnsure();liveHook();$('#hm').setAttribute('aria-label',tab==='train'?'Leave workout':'Back to home');
- document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===tab))}
+ document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));deskOrganize()}
 
 let PEX={};try{PEX=JSON.parse(localStorage.getItem('gymbros.pexp')||'{}')||{}}catch(e){PEX={}}
 function pexSave(){try{localStorage.setItem('gymbros.pexp',JSON.stringify(PEX))}catch(e){}}
@@ -1132,6 +1311,7 @@ $('#hm').onclick=()=>{if(tab!=='train'){tab='train';render();window.scrollTo(0,0
 sb.auth.onAuthStateChange((ev,sess)=>{if(ev==='PASSWORD_RECOVERY'){RECOVERY=true;AUTH.msg=''}if(ev==='TOKEN_REFRESHED'||ev==='USER_UPDATED')return;if(ev==='SIGNED_IN'&&ME&&sess&&ME.id===sess.user.id)return;if(!sess&&!navigator.onLine){const lu=lastUser();if(lu){setTimeout(()=>boot({user:lu}),0);return}}setTimeout(()=>boot(sess),0)});
 setInterval(()=>{if(ME&&!document.hidden&&((tab==='train'&&!S.active)||tab==='board'))loadLive()},30000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)liveHook()});
 if('serviceWorker' in navigator&&/^https?:/.test(location.protocol))window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+DESK.addEventListener?DESK.addEventListener('change',()=>render()):DESK.addListener(()=>render());
 render();
 </script>
 </body>
