@@ -485,9 +485,10 @@ function viewLog(){const a=S.active;
  <button class="w d" style="margin-top:8px" data-a="cancel">Discard workout</button>`}
 
 function viewPlans(){return `<h1>Plans</h1>
- ${S.plans.map(p=>`<div class="card"><div class="row" style="margin-bottom:14px"><input value="${esc(p.name)}" data-f="pn" data-p="${p.id}" aria-label="Plan name" style="flex:1 1 0;min-width:0;width:auto"><button data-a="shareplan" data-p="${p.id}">Share</button><button class="d" data-a="delplan" data-p="${p.id}">Delete</button></div>
- ${p.ex.map((n,i)=>`<div class="row sp pr"><div data-a="px" data-p="${p.id}" data-n="${esc(n)}" style="flex:1;cursor:pointer"><div>${esc(base(n))}</div>${equipOf(n)?`<div style="margin:4px 0 2px"><span class="eq" style="margin-left:0">${equipOf(n)}</span></div>`:''}<div class="mut" style="font-size:12px">${badges(n,p)}</div></div><span class="row"><button data-a="up" data-p="${p.id}" data-i="${i}" aria-label="Move up">↑</button><button data-a="dn" data-p="${p.id}" data-i="${i}" aria-label="Move down">↓</button><button class="d" data-a="delex" data-p="${p.id}" data-i="${i}" aria-label="Remove">✕</button></span></div>${PX[p.id+'|'+n]?`<div class="mn">${peqPanel(p,n)}${xsHTML(base(n),'pl',p.id,(p.ln||[]).includes(n),n)}</div>`:''}`).join('')}
- <div class="row" style="margin-top:10px"><input placeholder="Add exercise" id="n${p.id}"><button class="p" data-a="addex" data-p="${p.id}">Add</button></div></div>`).join('')}
+ ${genCard()}
+ ${S.plans.map(p=>`<div class="card"><div class="row" style="margin-bottom:${PEX[p.id]?14:0}px"><button data-a="ptog" data-p="${p.id}" aria-expanded="${!!PEX[p.id]}" aria-label="${PEX[p.id]?'Minimise':'Show'} ${esc(p.name)}" style="width:44px;height:44px;padding:0;font-size:24px;line-height:1">${PEX[p.id]?'−':'+'}</button><input value="${esc(p.name)}" data-f="pn" data-p="${p.id}" aria-label="Plan name" style="flex:1 1 0;min-width:0;width:auto">${PEX[p.id]?`<button data-a="shareplan" data-p="${p.id}">Share</button><button class="d" data-a="delplan" data-p="${p.id}">Delete</button>`:`<span class="mut" style="white-space:nowrap;padding:0 4px">${p.ex.length} exercise${p.ex.length===1?'':'s'}</span>`}</div>
+ ${PEX[p.id]?`${p.ex.map((n,i)=>`<div class="row sp pr"><div data-a="px" data-p="${p.id}" data-n="${esc(n)}" style="flex:1;cursor:pointer"><div>${esc(base(n))}</div>${equipOf(n)?`<div style="margin:4px 0 2px"><span class="eq" style="margin-left:0">${equipOf(n)}</span></div>`:''}<div class="mut" style="font-size:12px">${badges(n,p)}</div></div><span class="row"><button data-a="up" data-p="${p.id}" data-i="${i}" aria-label="Move up">↑</button><button data-a="dn" data-p="${p.id}" data-i="${i}" aria-label="Move down">↓</button><button class="d" data-a="delex" data-p="${p.id}" data-i="${i}" aria-label="Remove">✕</button></span></div>${PX[p.id+'|'+n]?`<div class="mn">${peqPanel(p,n)}${xsHTML(base(n),'pl',p.id,(p.ln||[]).includes(n),n)}</div>`:''}`).join('')}
+ <div class="row" style="margin-top:10px"><input placeholder="Add exercise" id="n${p.id}"><button class="p" data-a="addex" data-p="${p.id}">Add</button></div>`:''}</div>`).join('')}
  ${planImportCard()}${hxEditor()}<div class="card"><h3>Your bodyweight</h3><div class="row" style="margin-top:10px"><input id="bwp" inputmode="decimal" placeholder="kg" value="${S.bw??''}"><button class="p" data-a="setbwp">Save</button></div><div class="mut" style="margin-top:8px">Used for bodyweight exercises like pull-ups and dips.</div></div>
  <div class="card"><h3>Gym mates</h3><div class="row sp srow"><span>Show when I'm training</span><button class="sw ${liveOn()?'on':''}" data-a="livetog" role="switch" aria-checked="${liveOn()}" aria-label="Show when I am training"></button></div><div class="mut">People in your groups see your workout name, current exercise and sets done while you train.</div></div>
  <div class="card"><h3>Your data</h3><div class="mut" style="margin:8px 0 12px">Download a spreadsheet copy of your logs.</div><button class="w" data-a="expwk">Download workouts (CSV)</button><button class="w" style="margin-top:8px" data-a="expcut">Download fat loss log (CSV)</button></div>
@@ -803,7 +804,7 @@ function viewWk(tabs){const W=[...S.workouts].reverse();
  return `<h1>Progress</h1>${tabs}${WKMSG?`<div class="card tip" style="text-align:center">✓ ${WKMSG}</div>`:''}`+(W.length?W.map(w=>{
   const vol=w.ex.reduce((a,e)=>a+e.sets.reduce((b,x)=>b+x.w*x.r,0),0),n=w.ex.reduce((a,e)=>a+e.sets.length,0),o=OPEN[w.id];
   return `<div class="card"><div class="row sp" data-a="wkopen" data-id="${w.id}" style="cursor:pointer"><div><h3>${esc(w.plan||'Workout')}</h3><div class="mut">${fdl(w.date)} · ${n} sets · ${Math.round(vol).toLocaleString()} kg${(w.cardio||[]).length?' · '+w.cardio.reduce((q,c)=>q+c.min,0)+' min cardio':''}</div></div><span class="mut">${o?'−':'+'}</span></div>`
-  +(o?(EDW&&EDW.id===w.id?editHTML():`<div class="hx" style="margin-top:12px">${w.ex.map(e=>`<div style="display:block;padding:6px 0"><b>${esc(e.name)}</b><br><span class="mut">${fs(e.sets,e.name)}</span>${e.warm&&e.warm.length?`<br><span class="mut">Warm-up: ${fs(e.warm)}</span>`:''}${e.note?`<br><span class="mut">Note: ${esc(e.note)}</span>`:''}</div>`).join('')}${(w.cardio||[]).map(c=>`<div style="display:block;padding:6px 0"><b>${esc(c.name)}</b><br><span class="mut">${c.min} min${c.km?' · '+c.km+' km':''}</span></div>`).join('')}</div><div class="setbtns" style="margin-top:12px"><button data-a="wkedit" data-id="${w.id}">Edit workout</button><button class="d" data-a="wkdel" data-id="${w.id}">Delete workout</button></div>`):'')+'</div>'}).join(''):'<div class="card mut">No workouts logged yet.</div>')}
+  +(o?(EDW&&EDW.id===w.id?editHTML():`<div class="hx" style="margin-top:12px">${w.ex.map(e=>`<div style="display:block;padding:6px 0"><b>${esc(e.name)}</b><br><span class="mut">${fs(e.sets,e.name)}</span>${e.warm&&e.warm.length?`<br><span class="mut">Warm-up: ${fs(e.warm)}</span>`:''}${e.note?`<br><span class="mut">Note: ${esc(e.note)}</span>`:''}</div>`).join('')}${(w.cardio||[]).map(c=>`<div style="display:block;padding:6px 0"><b>${esc(c.name)}</b><br><span class="mut">${c.min} min${c.km?' · '+c.km+' km':''}</span></div>`).join('')}</div><div class="setbtns" style="margin-top:12px"><button class="p" data-a="wksaveplan" data-id="${w.id}">Save as plan</button><button data-a="wkedit" data-id="${w.id}">Edit workout</button><button class="d" data-a="wkdel" data-id="${w.id}">Delete workout</button></div>`):'')+'</div>'}).join(''):'<div class="card mut">No workouts logged yet.</div>')}
 async function delWk(id){if(!navigator.onLine)return alert('You need a connection to delete a workout.');if(!confirm('Delete this workout? This cannot be undone.'))return;
  const r=await sb.from('workouts').delete().eq('id',id);if(r.error)return fail(r.error);
  S.workouts=S.workouts.filter(w=>w.id!==id);save();render()}
@@ -925,6 +926,66 @@ function render(){if(!S.active&&rend)rtStop();
  if(tab==='cut'&&S.cut&&CL)cutLive();
  $('nav').hidden=!ME||RECOVERY;document.body.classList.toggle('lgn',READY&&(!ME||RECOVERY));$('#hm').hidden=!(ME&&!RECOVERY&&(tab!=='train'||S.active));updOff();ctEnsure();liveHook();$('#hm').setAttribute('aria-label',tab==='train'?'Leave workout':'Back to home');
  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===tab))}
+
+let PEX={};try{PEX=JSON.parse(localStorage.getItem('gymbros.pexp')||'{}')||{}}catch(e){PEX={}}
+function pexSave(){try{localStorage.setItem('gymbros.pexp',JSON.stringify(PEX))}catch(e){}}
+const GP={
+ chest:['Bench Press (Barbell)','Bench Press (Dumbbell)','Chest Press (Machine)'],
+ incline:['Incline Bench Press (Barbell)','Incline Press (Dumbbell)','Incline Chest Press (Machine)'],
+ fly:['Cable Fly (Cables)','Chest Fly (Machine)','Dumbbell Fly (Dumbbell)'],
+ dip:['Dip','Dip','Chest Press (Machine)'],
+ shp:['Overhead Press (Barbell)','Shoulder Press (Dumbbell)','Shoulder Press (Machine)'],
+ lat:['Lateral Raise (Dumbbell)','Lateral Raise (Cables)'],
+ rear:['Rear Delt Fly (Machine)','Face Pull (Cables)','Rear Delt Fly (Dumbbell)'],
+ tri:['Triceps Pushdown (Cables)','Overhead Triceps Extension (Cables)','Skull Crusher (EZ Bar)','Triceps Extension (Dumbbell)'],
+ vert:['Pull Up','Lat Pulldown (Cables)','Chin Up','Lat Pulldown (Machine)'],
+ horiz:['Barbell Row (Barbell)','Seated Row (Cables)','Chest Supported Row (Machine)','One Arm Row (Dumbbell)'],
+ hinge:['Deadlift (Barbell)','Romanian Deadlift (Barbell)','Trap Bar Deadlift (Trap Bar)'],
+ strt:['Straight Arm Pulldown (Cables)','Shrug (Dumbbell)'],
+ bi:['Biceps Curl (Dumbbell)','Hammer Curl (Dumbbell)','Curl (EZ Bar)','Incline Curl (Dumbbell)','Preacher Curl (Machine)'],
+ quad:['Squat (Barbell)','Front Squat (Barbell)','Hack Squat (Machine)','Leg Press (Machine)'],
+ quad2:['Leg Press (Machine)','Bulgarian Split Squat (Dumbbell)','Lunges (Dumbbell)','Hack Squat (Machine)'],
+ ext:['Leg Extension (Machine)'],
+ ham:['Romanian Deadlift (Barbell)','Romanian Deadlift (Dumbbell)','Good Morning (Barbell)'],
+ curl:['Leg Curl (Machine)','Seated Leg Curl (Machine)'],
+ glute:['Hip Thrust (Barbell)','Hip Thrust (Machine)','Cable Kickback (Cables)'],
+ calf:['Calf Raise (Machine)','Seated Calf Raise (Machine)'],
+ core:['Cable Crunch (Cables)','Hanging Leg Raise','Plank (Timed)','Ab Wheel']
+};
+const GS={
+ push:['chest','shp','incline','tri','lat','fly','tri','dip'],
+ pull:['vert','horiz','horiz','rear','bi','bi','strt','vert'],
+ legs:['quad','ham','quad2','curl','ext','calf','core','glute'],
+ upper:['chest','horiz','shp','vert','lat','bi','tri','rear'],
+ full:['quad','chest','horiz','hinge','shp','vert','core','bi'],
+ chest:['chest','incline','fly','dip','fly','tri'],
+ back:['vert','horiz','horiz','rear','strt','hinge'],
+ shoulders:['shp','lat','rear','lat','shp','strt'],
+ arms:['bi','tri','bi','tri','bi','tri'],
+ bi:['bi','bi','bi','bi'],tri:['tri','tri','tri','tri'],
+ glutes:['glute','ham','quad2','glute','curl','calf'],
+ core:['core','core','core','core','core','core']
+};
+GS.lower=GS.legs;
+const GRE=[[/\b(full|total|whole)[\s-]*body\b/,'full'],[/\bpush\b/,'push'],[/\bpull\b/,'pull'],[/\bupper\b/,'upper'],[/\blower\b|\blegs?\b|\bquads?\b|\bhamstrings?\b/,'legs'],
+ [/\bchest\b|\bpecs?\b/,'chest'],[/\bback\b|\blats?\b/,'back'],[/\bshoulders?\b|\bdelts?\b/,'shoulders'],[/\barms?\b/,'arms'],[/\bbiceps?\b/,'bi'],[/\btriceps?\b/,'tri'],
+ [/\bglutes?\b|\bbum\b/,'glutes'],[/\bcore\b|\babs?\b/,'core']];
+function genSlots(q,n){q=q.toLowerCase();const hit=[];for(const[r,k]of GRE)if(r.test(q)&&!hit.includes(k))hit.push(k);if(!hit.length)return null;
+ const main=hit.find(k=>['full','push','pull','upper','legs'].includes(k));
+ if(main)return GS[main].slice(0,n);
+ if(hit.length===1)return GS[hit[0]].slice(0,n);
+ const per=Math.max(2,Math.ceil(n/hit.length)),out=[];for(let i=0;i<per;i++)hit.forEach(k=>{if(GS[k][i]&&out.length<n)out.push(GS[k][i])});return out}
+function genPlan(q,n){const sl=genSlots(q,n);if(!sl)return null;const used=new Set(),ex=[];
+ sl.forEach(k=>{const pool=GP[k].filter(x=>!used.has(base(x)));const c=(pool.length?pool:GP[k])[Math.floor(Math.random()*(pool.length||GP[k].length))];if(used.has(base(c)))return;used.add(base(c));ex.push(c)});return ex}
+const GCHIPS=['Push','Pull','Legs','Upper','Lower','Full body','Chest & triceps','Back & biceps','Shoulders','Arms','Glutes','Core'];
+function genCard(){return `<div class="card"><h3>Generate a plan</h3><div class="mut" style="margin:6px 0 10px">Type what you want to train, like Push, Legs or Chest &amp; triceps, and it builds a full plan you can then edit.</div>
+ <input id="gi" placeholder="e.g. Push" aria-label="What to train" autocapitalize="words" style="width:100%">
+ <div class="row" style="margin:10px 0;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch">${GCHIPS.map(c=>`<button data-a="genchip" data-v="${esc(c)}">${esc(c)}</button>`).join('')}</div>
+ <div class="row"><select id="gn" aria-label="Number of exercises" style="flex:1">${[5,6,7,8].map(x=>`<option value="${x}" ${x===6?'selected':''}>${x} exercises</option>`).join('')}</select><button class="p" data-a="gen">Generate</button></div></div>`}
+function genRun(){const q=($('#gi').value||'').trim(),n=+$('#gn').value||6;if(!q)return alert('Type what you want to train first, for example Push.');
+ const ex=genPlan(q,n);if(!ex)return alert('Not sure what "'+q+'" trains. Try Push, Pull, Legs, Upper, Lower, Full body, Chest, Back, Shoulders, Arms, Glutes or Core.');
+ let nm=q.replace(/\s+/g,' ').replace(/(^|\s|&)(\w)/g,(m,a,b)=>a+b.toUpperCase()).slice(0,60),b=nm,k=2;while(S.plans.some(p=>p.name===nm))nm=b+' '+(k++);
+ const p={id:uid(),name:nm,ex,ln:[]};S.plans.unshift(p);PEX[p.id]=true;pexSave();save();syncPlans();render();window.scrollTo(0,0)}
 const P=id=>S.plans.find(p=>p.id===id);
 document.addEventListener('click',e=>{
  const n=e.target.closest('nav button');if(n){tab=n.dataset.t;render();if(tab==='board'){L.msg='';L.add=false;loadBoard()}window.scrollTo(0,0);return}
@@ -936,7 +997,10 @@ document.addEventListener('click',e=>{
  else if(a==='addset'){const e=S.active.ex[i],s=e.sets,hint=l=>({pw:l?(l.w!==''?l.w:l.pw):undefined,pr:l?(l.r!==''?l.r:l.pr):undefined});
   if(isUni(e.name)){const L=s[s.length-2],R=s[s.length-1];s.push({w:'',r:'',d:false,side:'L',...hint(L)},{w:'',r:'',d:false,side:'R',...hint(R)})}else s.push({w:'',r:'',d:false,...hint(s[s.length-1])});save();render()}
  else if(a==='rmset'){const e=S.active.ex[i],s=e.sets,k=(isUni(e.name)&&s.length>2&&s[s.length-1].side==='R')?2:1;if(s.length>k)s.splice(s.length-k,k);save();render()}
- else if(a==='newplan'){S.plans.push({id:uid(),name:'New plan',ex:[]});save();render()}
+ else if(a==='newplan'){const np={id:uid(),name:'New plan',ex:[]};S.plans.push(np);PEX[np.id]=true;pexSave();save();render()}
+ else if(a==='ptog'){PEX[D.p]=!PEX[D.p];pexSave();render()}
+ else if(a==='genchip'){const f=$('#gi');if(f)f.value=D.v}
+ else if(a==='gen'){genRun()}
  else if(a==='delplan'){if(confirm('Delete this plan? Logged workouts are kept.')){S.plans=S.plans.filter(p=>p.id!==D.p);save();render()}}
  else if(a==='addex'){const f=$('#n'+D.p),v=f.value.trim();if(v){P(D.p).ex.push(v);save();render()}}
  else if(a==='delex'){P(D.p).ex.splice(i,1);save();render()}
@@ -1004,6 +1068,8 @@ document.addEventListener('click',e=>{
  else if(a==='demo')enterDemo();
  else if(a==='sumok'){SUM=null;render()}
  else if(a==='pv'){pv=D.v;render()}else if(a&&a.startsWith('ch')&&chAct(a,D)){}else if(a&&a.startsWith('hx')&&hxAct(a,D)){}else if(a==='delacct'){delAccount()}else if(a==='swatch'){swatch(D)}else if(a==='shareplan'){sharePlan(D.p)}else if(a==='impplan'){const f=$('#impcode');importPlan(f&&f.value)}else if(a==='planupd'){planUpd(false)}else if(a==='plannew'){planUpd(true)}else if(a==='chsw'){const o=chLoad();o.s=D.v;chSave(o);render()}else if(a==='chtick'){const o=chLoad();if(o.t[D.k])delete o.t[D.k];else o.t[D.k]=dstr(Date.now());chSave(o);render()}
+ else if(a==='wksaveplan'){const w=S.workouts.find(x=>x.id===D.id);if(w){if(!w.ex.length)return alert('This workout has no exercises to save.');let nm=w.plan||'Workout',b=nm,k=2;while(S.plans.some(p=>p.name===nm))nm=b+' ('+(k++)+')';
+  nm=(prompt('Name for the new plan',nm)||'').trim().slice(0,80);if(nm){const p={id:uid(),name:nm,ex:w.ex.map(e=>e.name),ln:w.ex.filter(e=>e.ln).map(e=>e.name)};S.plans.push(p);PEX[p.id]=true;pexSave();save();syncPlans();wkMsg('Saved as plan "'+nm+'". Find it in the Plans tab');render()}}}
  else if(a==='wkopen'){OPEN[D.id]=!OPEN[D.id];render()}
  else if(a==='wkdel')delWk(D.id);
  else if(a==='authmode'){AUTH.mode=AUTH.mode==='in'?'up':'in';AUTH.msg='';render()}
