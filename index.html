@@ -684,7 +684,7 @@ function rtUpd(){const el=$('#rt'),left=Math.ceil((rend-Date.now())/1000);
  if(!S.active){rtStop();return}
  if(left<=0){beep();rtStop();return}
  el.hidden=false;el.innerHTML=`<span class="big">${Math.floor(left/60)}:${String(left%60).padStart(2,'0')}</span><span class="mut">Rest</span><button data-a="rm">−15s</button><button data-a="rp">+15s</button><button data-a="rs">Skip</button>`}
-let tab=window.matchMedia('(min-width:900px)').matches?'prog':'train',pe='',pm='e1',pr='3M';
+let DR=(()=>{try{return localStorage.getItem('gymbros.dr')||'12w'}catch(e){return'12w'}})(),tab=window.matchMedia('(min-width:900px)').matches?'prog':'train',pe='',pm='e1',pr='3M';
 const e1=(w,r)=>r>0?w*(1+r/30):0;
 const fd=t=>new Date(t).toLocaleDateString(undefined,{day:'numeric',month:'short'});
 const fs=(s,n)=>{const q=n?equipOf(n):'';return s.map(x=>(x.side?x.side+' ':'')+(q==='Timed'?fmtSec(x.r):q==='Resistance Band'?(bandN(x.w)||'Band')+'×'+x.r:(x.bw?'BW'+(x.w-x.bw>0?'+'+(x.w-x.bw):''):x.w)+'×'+x.r)).join(' · ')};
@@ -1311,11 +1311,26 @@ function deskMore(W){
  const R=(a,b)=>`<div class="ovlr"><span>${a}</span><b>${b}</b></div>`;
  const streak=dCard('s4','Streaks','Weeks with at least one workout.',R('Current streak',cst+' wk')+R('Longest streak',lng+' wk')+R('Best week',Math.max(...cnt)+' workouts')+R('Active weeks',cnt.filter(c=>c).length+' of '+cnt.length)+R('Longest rest gap',gap+' days'));
  /* tables */
- const L=[...X].filter(([,a])=>a.length>=2).sort((a,b)=>b[1].length-a[1].length);
+ const L=[...X].filter(([,a])=>a.length>=2).filter(([,a])=>a[a.length-1].d>=drStart()).sort((a,b)=>b[1].length-a[1].length);
  const lifts=dCard('s12','All lifts','Exercises you have done at least twice, most-trained first.',`<div class="dtbl-w"><table class="dtbl"><tr><th>Exercise</th><th>Sessions</th><th>First 1RM</th><th>Best 1RM</th><th>Change</th><th>Heaviest</th><th>Last trained</th></tr>${L.map(([n,a])=>{const f=a[0].v,b=Math.max(...a.map(x=>x.v)),g=Math.round((b/f-1)*100);return `<tr><td>${esc(n)}</td><td>${a.length}</td><td>${r1(f)} kg</td><td>${r1(b)} kg</td><td class="${g>=0?'up':'dn'}">${g>0?'+':''}${g}%</td><td>${r1(Math.max(...a.map(x=>x.t)))} kg</td><td>${fd(a[a.length-1].d)}</td></tr>`}).join('')}</table></div>`);
  const rc=[...W].reverse().slice(0,10).map(w=>{let tp=null;w.ex.forEach(e=>{if(isBand(e.name)||isTimed(e.name))return;e.sets.forEach(x=>{if(x.r>0&&(!tp||e1(x.w,x.r)>e1(tp.w,tp.r)))tp={w:x.w,r:x.r,n:base(e.name)}})});return `<tr><td>${dLong(w.date)}</td><td class="l">${esc(w.plan||'Custom')}</td><td>${w.ex.length}</td><td>${w.ex.reduce((a,e)=>a+e.sets.filter(x=>x.r>0).length,0)}</td><td>${(dVol(w)/1000).toFixed(1)} t</td><td class="sets">${tp?esc(tp.n)+' '+tp.w+' kg × '+tp.r:'–'}</td></tr>`}).join('');
  const recent=dCard('s12','Recent workouts','Your last ten sessions.',`<table class="dtbl"><tr><th>Date</th><th style="text-align:left">Workout</th><th>Exercises</th><th>Sets</th><th>Volume</th><th style="text-align:left">Top set</th></tr>${rc}</table>`);
  return{kpis,week,cmp,wpw,cal,streak,lifts,recent,sub:`${cur.length} workout${cur.length===1?'':'s'} this week · ${cst}-week streak · ${(cv/1000).toFixed(1)} t lifted`}}
+function drStart(){const d={'4w':28,'12w':84,'6m':182}[DR];return d?Date.now()-d*864e5:0}
+const MUS=[['Core',/\babs?\b|ab wheel|abdom|plank|crunch|sit.?up|leg raise|hanging|russian/],['Legs',/squat|leg|lunge|calf|calves|thrust|glute|romanian|rdl|hamstring|step.?up|hack/],['Shoulders',/shoulder|overhead|ohp|lateral|front raise|rear delt|face pull|arnold|upright|military/],['Arms',/curl|tricep|skull|pushdown|push down|hammer|kickback|preacher/],['Back',/row|pull|\blat\b|deadlift|shrug|back ext|rack pull|good morning/],['Chest',/bench|chest|fly|flye|pec|push.?up|dip|incline|decline|press/]];
+function deskExtra(W,Wr){
+ const st=drStart(),X=new Map();
+ [...W].sort((a,b)=>a.date-b.date).forEach(w=>w.ex.forEach(e=>{if(isBand(e.name)||isTimed(e.name))return;const q=e.sets.filter(x=>x.r>0);if(!q.length)return;const b=base(e.name);if(!X.has(b))X.set(b,[]);X.get(b).push({d:w.date,v:Math.max(...q.map(x=>e1(x.w,x.r)))})}));
+ const U=[...X].filter(([,a])=>a.length>=3&&a[a.length-1].d>=st).map(([n,a])=>{const b=Math.max(...a.map(x=>x.v));return{n,b,s:a.length-1-a.map(x=>x.v).lastIndexOf(b),g:Math.round((b/a[0].v-1)*100),k:a.length}});
+ const rw=(x,sub,r,bad)=>`<div class="ovlr"><div><b>${esc(x.n)}</b><div class="mut">${sub}</div></div><div class="ovs${bad?' bad':''}">${r}</div></div>`,emp=t=>`<div class="mut" style="margin-top:8px">${t}</div>`;
+ const c=U.filter(x=>x.s<=1).sort((a,b)=>b.g-a.g).slice(0,6),z=U.filter(x=>x.s>=4).sort((a,b)=>b.s-a.s).slice(0,6);
+ const climb=dCard('s6','Climbing','New best within your last two sessions.',c.length?c.map(x=>rw(x,'Best '+r1(x.b)+' kg est. 1RM · '+x.k+' sessions',(x.g>=0?'+':'')+x.g+'% since first')).join(''):emp('Nothing has hit a new best recently.'));
+ const stall=dCard('s6','Stalled','No new best in four or more sessions.',z.length?z.map(x=>rw(x,'Best '+r1(x.b)+' kg est. 1RM',x.s+' sessions ago',1)).join(''):emp('No stalled lifts. Nice.'));
+ const M=new Map(MUS.map(([n])=>[n,0]));let oth=0;
+ Wr.forEach(w=>w.ex.forEach(e=>{if(isBand(e.name)||isTimed(e.name))return;const n=e.sets.filter(x=>x.r>0).length,nm=base(e.name).toLowerCase(),m=MUS.find(([,r])=>r.test(nm));m?M.set(m[0],M.get(m[0])+n):oth+=n}));
+ const wks=Math.max(1,(Date.now()-Math.max(st,Math.min(...Wr.map(w=>w.date))))/6048e5),tot=[...M.values()].reduce((a,b)=>a+b,0)||1,mx=Math.max(...M.values(),1),rows=[...M].sort((a,b)=>b[1]-a[1]),low=rows[rows.length-1];
+ const musc=dCard('s12','Muscle balance','Working sets per week over the selected range'+(oth?' ('+oth+' sets could not be grouped).':'.'),rows.map(([n,v])=>dBar(n,r1(v/wks)+' sets/wk',v/mx*100,Math.round(v/tot*100)+'%')).join('')+`<div class="dnote">Least trained: <b>${low[0]}</b> at ${r1(low[1]/wks)} sets a week.</div>`);
+ return{climb,stall,musc}}
 function deskExDeep(name){
  if(isBand(name)||isTimed(name))return null;
  const R0=[];S.workouts.forEach(w=>{const e=w.ex.find(x=>x.name===name);if(!e)return;const s=e.sets.filter(x=>x.r>0);if(!s.length)return;R0.push({t:w.date,plan:w.plan||'–',s,e1:Math.max(...s.map(x=>e1(x.w,x.r))),top:s.reduce((a,x)=>x.w>a.w||(x.w===a.w&&x.r>a.r)?x:a,s[0]),vol:s.reduce((a,x)=>a+x.w*x.r,0)})});
@@ -1398,15 +1413,17 @@ function deskOrganize(){
   const hd=takeHead(),ovg=take(k=>k.classList.contains('ovg'))[0],cards=take(k=>k.matches('.card'));
   const find=re=>cards.find(c=>re.test((c.querySelector('h3')||{}).textContent||''));
   const cons=find(/Consisten/i),trends=find(/Strength/i),prs=find(/PR/i),I=deskInsights(W);
-  const M=deskMore(W);
-  out=[hero(hd,M.sub),
+  const M=deskMore(W),R0=W.filter(w=>w.date>=drStart()),Wr=R0.length?R0:W,E=deskExtra(W,Wr),I2=deskInsights(Wr),rng=dEl('div','dtool',dEl('div','chips seg',[['4w','4 weeks'],['12w','12 weeks'],['6m','6 months'],['all','All time']].map(([k,l])=>{const b=document.createElement('button');b.textContent=l;b.dataset.a='dr';b.dataset.v=k;if(k===DR)b.className='on';return b})));
+  out=[hero(hd,M.sub),rng,
    dBento('ov8',[...ovg.children,...M.kpis].map(c=>[c,'s3'])),
    dSec('This week.','Day by day.',dBento('',[[M.week,'s8'],[M.cmp,'s4']])),
-   dSec('Training volume.','Week by week.',dBento('',[[deskVolume(W)],[M.wpw,'s4']])),
+   dSec('Training volume.','Week by week.',dBento('',[[deskVolume(Wr)],[M.wpw,'s4']])),
    dSec('Consistency.','Your last 26 weeks.',dBento('',[[M.cal,'s8'],[M.streak,'s4']])),
    dSec('Strength.',"What's getting heavier.",dBento('',[[trends,'s7'],[prs,'s5']])),
+   dSec('Momentum.','What is moving and what is stuck.',dBento('',[[E.climb,'s6'],[E.stall,'s6']])),
+   dSec('Muscle balance.','Where your sets go.',dBento('',[[E.musc,'s12']])),
    dSec('All lifts.','Where each exercise stands.',dBento('',[[M.lifts,'s12']])),
-   dSec('Insights.','Patterns in your training.',dBento('',[[I.plan],[I.day],[I.ex],[I.month],[I.life]])),
+   dSec('Insights.','Patterns in your training.',dBento('',[[I2.plan],[I2.day],[I2.ex],[I2.month],[I2.life]])),
    dSec('Recent workouts.','What you did lately.',dBento('',[[M.recent,'s12']])),...kids];
   out[1].style.marginTop='0';
  }else if(view==='prog-ex'&&kids.some(k=>k.tagName==='SELECT')){
@@ -1573,7 +1590,7 @@ document.addEventListener('click',e=>{
  else if(a==='rmcardio'){S.active.cardio.splice(i,1);save();render()}
  else if(a==='demo')enterDemo();
  else if(a==='sumok'){SUM=null;render()}
- else if(a==='pv'){pv=D.v;render()}else if(a&&a.startsWith('ch')&&chAct(a,D)){}else if(a&&a.startsWith('hx')&&hxAct(a,D)){}else if(a==='delacct'){delAccount()}else if(a==='swatch'){swatch(D)}else if(a==='shareplan'){sharePlan(D.p)}else if(a==='impplan'){const f=$('#impcode');importPlan(f&&f.value)}else if(a==='planupd'){planUpd(false)}else if(a==='plannew'){planUpd(true)}else if(a==='chsw'){const o=chLoad();o.s=D.v;chSave(o);render()}else if(a==='chtick'){const o=chLoad();if(o.t[D.k])delete o.t[D.k];else o.t[D.k]=dstr(Date.now());chSave(o);render()}
+ else if(a==='pv'){pv=D.v;render()}else if(a==='dr'){DR=D.v;try{localStorage.setItem('gymbros.dr',DR)}catch(e){}render()}else if(a&&a.startsWith('ch')&&chAct(a,D)){}else if(a&&a.startsWith('hx')&&hxAct(a,D)){}else if(a==='delacct'){delAccount()}else if(a==='swatch'){swatch(D)}else if(a==='shareplan'){sharePlan(D.p)}else if(a==='impplan'){const f=$('#impcode');importPlan(f&&f.value)}else if(a==='planupd'){planUpd(false)}else if(a==='plannew'){planUpd(true)}else if(a==='chsw'){const o=chLoad();o.s=D.v;chSave(o);render()}else if(a==='chtick'){const o=chLoad();if(o.t[D.k])delete o.t[D.k];else o.t[D.k]=dstr(Date.now());chSave(o);render()}
  else if(a==='wksaveplan'){const w=S.workouts.find(x=>x.id===D.id);if(w){if(!w.ex.length)return alert('This workout has no exercises to save.');let nm=w.plan||'Workout',b=nm,k=2;while(S.plans.some(p=>p.name===nm))nm=b+' ('+(k++)+')';
   nm=(prompt('Name for the new plan',nm)||'').trim().slice(0,80);if(nm){const p={id:uid(),name:nm,ex:w.ex.map(e=>e.name),ln:w.ex.filter(e=>e.ln).map(e=>e.name)};S.plans.push(p);PEX[p.id]=true;pexSave();save();syncPlans();wkMsg('Saved as plan "'+nm+'". Find it in the Plans tab');render()}}}
  else if(a==='wkopen'){OPEN[D.id]=!OPEN[D.id];render()}
