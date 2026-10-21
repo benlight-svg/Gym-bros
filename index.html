@@ -200,11 +200,11 @@ button,nav{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
 /* ===== Desktop: product-page layout. Phones keep the markup above untouched. ===== */
 .nbrand,.nfoot{display:none}
 @media (min-width:900px){
- :root{--sfp:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif}
+ :root{--side:248px;--sfp:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif}
  html{overflow-x:hidden;scroll-behavior:smooth}
- body{overflow-x:clip;padding:0 0 140px;font:400 17px/1.47 var(--sfp);letter-spacing:-.011em}
- body.lgn{padding-bottom:40px}
- main{overflow:visible;width:auto;max-width:1240px;margin:0 auto;padding:52px 32px 0}
+ body{overflow-x:clip;padding:0 0 140px var(--side);font:400 17px/1.47 var(--sfp);letter-spacing:-.011em}
+ body.lgn{padding:0 0 40px}
+ main{overflow:visible;width:auto;max-width:1240px;margin:0 auto;padding:20px 40px 0}
  main[data-view=log]{max-width:1320px}
  body.lgn main{max-width:460px;padding-top:56px}
  .authpage .lock{max-width:260px}
@@ -238,27 +238,30 @@ button,nav{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
  .card h3{font-size:21px}
  .stat,.ovt{border-radius:24px}
 
- /* top navigation */
- nav{top:0;right:0;bottom:auto;left:0;width:auto;height:52px;flex-direction:row;justify-content:center;align-items:center;gap:4px;padding:0 24px;background:color-mix(in srgb,var(--bg) 72%,transparent);-webkit-backdrop-filter:saturate(180%) blur(22px);backdrop-filter:saturate(180%) blur(22px);border:0;border-bottom:.5px solid color-mix(in srgb,var(--ln) 70%,transparent);z-index:20}
- nav button{flex:none;flex-direction:row;min-height:34px;height:34px;padding:0 18px;font-size:14px;font-weight:500;letter-spacing:-.005em;background:transparent;color:var(--mut)}
- nav button svg{display:none}
- nav button:hover{color:var(--ink);background:transparent;filter:none}
- nav button.on{background:var(--in);color:var(--ink)}
- .nbrand{display:flex;align-items:center;gap:9px;position:absolute;left:28px;top:0;height:52px;font-weight:700;font-size:16px;letter-spacing:-.02em}
- .nbrand svg{width:22px;height:22px;color:var(--ac);flex:none}
- .nfoot{display:flex;align-items:center;gap:9px;position:absolute;right:72px;top:0;height:52px;font-size:13px;color:var(--mut)}
- .nfoot i{width:26px;height:26px;border-radius:50%;background:var(--in);color:var(--ac);display:grid;place-items:center;font-style:normal;font-weight:700;font-size:12px}
- .nfoot span{max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
- #tm{position:fixed;top:10px;right:24px;bottom:auto;left:auto;width:32px;height:32px;min-height:0;padding:0;border-radius:50%;background:transparent;color:var(--mut);z-index:30;display:grid;place-items:center}
- #tm:hover{background:var(--in);color:var(--ink)}
- #tm svg{width:18px;height:18px}
+ /* sidebar */
+ nav{top:0;right:auto;bottom:0;left:0;width:var(--side);height:auto;flex-direction:column;justify-content:flex-start;align-items:stretch;gap:2px;padding:28px 14px 16px;background:var(--nav);-webkit-backdrop-filter:none;backdrop-filter:none;border:0;border-right:.5px solid var(--ln);overflow-y:auto;z-index:20}
+ .nbrand{display:block;position:static;height:auto;padding:0 10px 28px}
+ .nbrand .lock-s{display:block;width:100%;max-width:170px;margin:0 auto}
+ nav button{flex:none;flex-direction:row;justify-content:flex-start;gap:14px;min-height:44px;height:auto;padding:0 14px;font-size:16px;font-weight:600;border-radius:12px;color:var(--mut);text-align:left;background:transparent}
+ nav button svg{display:block;width:22px;height:22px;flex:none}
+ nav button:hover{background:var(--in);color:var(--ink);filter:none}
+ nav button.on{background:var(--in);color:var(--ac)}
+ .nfoot{display:flex;position:static;height:auto;align-items:center;gap:10px;margin-top:auto;padding:14px 10px 58px;border-top:.5px solid var(--ln);font-size:14px;color:var(--ink)}
+ .nfoot i{width:32px;height:32px;border-radius:50%;background:var(--in);color:var(--ac);display:grid;place-items:center;font-style:normal;font-weight:700;font-size:14px}
+ .nfoot span{min-width:0;max-width:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ #tm{position:fixed;top:auto;right:auto;left:14px;bottom:14px;width:calc(var(--side) - 28px);height:40px;min-height:0;border-radius:12px;display:flex;align-items:center;justify-content:flex-start;gap:12px;padding:0 14px;background:var(--in);color:var(--ink);font-size:14px;font-weight:500;z-index:30}
+ #tm svg{width:20px;height:20px}
+ #tm::after{content:"Light mode"}
+ :root[data-theme="light"] #tm::after{content:"Dark mode"}
+ body.lgn #tm{left:auto;right:24px;top:20px;bottom:auto;width:42px;height:42px;border-radius:50%;justify-content:center;padding:0}
+ body.lgn #tm::after{content:none}
  #hm{display:none}
  body:not(.lgn):has(nav[hidden]) #tm{display:none}
 
- #rt{left:50%;right:auto;transform:translateX(-50%);width:min(520px,calc(100vw - 64px));max-width:none;bottom:28px;border-radius:980px;padding:14px 22px;-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}
+ #rt{left:calc(var(--side) + (100vw - var(--side))/2);right:auto;transform:translateX(-50%);width:min(520px,calc(100vw - var(--side) - 64px));max-width:none;bottom:28px;border-radius:980px;padding:14px 22px;-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}
 
  /* hero */
- .hero{text-align:center;padding:72px 0 56px}
+ .hero{text-align:center;padding:64px 0 52px}
  .hero.sm{padding:48px 0 36px}
  .hero .hlogo svg{display:block;width:230px;max-width:60%;margin:0 auto 34px}
  .hero h1{font-size:clamp(46px,6.4vw,80px);line-height:1.03;margin:0}
@@ -321,7 +324,7 @@ button,nav{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
  .dcols{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:28px;align-items:start}
  [data-view=log] .dcols{grid-template-columns:minmax(0,1fr) 340px}
  [data-view=hx] .dcols{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
- .drail{position:sticky;top:76px;display:flex;flex-direction:column;gap:20px;min-width:0}
+ .drail{position:sticky;top:28px;display:flex;flex-direction:column;gap:20px;min-width:0}
  [data-view=hx] .drail,[data-view=board] .drail{position:static}
  .drail>*,.dmain>*{margin:0}
  .dmain{display:flex;flex-direction:column;gap:20px;min-width:0}
@@ -393,7 +396,7 @@ button,nav{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
  .sbox{width:min(580px,calc(100vw - 64px));max-height:82vh;border-radius:28px;padding:28px}
  .sback{-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
 }
-@media (min-width:900px) and (max-width:1100px){
+@media (min-width:900px) and (max-width:1320px){
  .bento>.s3{grid-column:span 6}.bento>.s4,.bento>.s5{grid-column:span 6}.bento>.s7,.bento>.s8{grid-column:1/-1}
  .cols3{columns:2}
 }
@@ -1180,7 +1183,8 @@ function deskOrganize(){
  const v=$('#v'),nav=$('nav');v.removeAttribute('data-view');document.body.dataset.tab=tab;
  if(!DESK.matches||!READY||!ME||RECOVERY)return;
  let br=nav.querySelector('.nbrand'),ft=nav.querySelector('.nfoot');
- if(!br){br=dEl('div','nbrand');nav.prepend(br);ft=dEl('div','nfoot');nav.append(ft);const ic=nav.querySelector('button svg');br.innerHTML=(ic?ic.outerHTML:'')+'<span>Gym Bros</span>'}
+ if(!br){br=dEl('div','nbrand');nav.prepend(br);ft=dEl('div','nfoot');nav.append(ft)}
+ br.innerHTML=isDark()?LOGOS_D:LOGOS_L;
  const nm=String(ME.name||ME.email||'');ft.innerHTML=`<i>${esc((nm[0]||'?').toUpperCase())}</i><span>${esc(nm)}</span>`;
  const all=[...v.children];let kids=all.slice();
  const take=f=>{const r=kids.filter(f);kids=kids.filter(k=>!f(k));return r};
@@ -1206,7 +1210,7 @@ function deskOrganize(){
    glance.push([k,/Fat loss/i.test(k.textContent)?'s12':'s4'])});
   secs.forEach(s=>s.querySelectorAll('[data-a=start]').forEach(b=>{const p=S.plans.find(x=>x.id===b.dataset.p),t=b.closest('.card')&&b.closest('.card').firstElementChild;
    if(p&&t&&p.ex.length){const nms=p.ex.map(base),q=dTxt('div','dpv',nms.slice(0,5).join(', ')+(nms.length>5?' +'+(nms.length-5)+' more':''));t.append(q)}}));
-  out=[hero({},d.toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'}),{logo:true,h1:g+(n1?', '+n1:'')}),notes,...secs];
+  out=[hero({},d.toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'}),{h1:g+(n1?', '+n1:'')}),notes,...secs];
   if(glance.length)out.push(dSec('At a glance.','Your numbers.',dBento('',glance)));
  }else if(view==='log'){
   const hd=takeHead(),intro=take(k=>k.matches('.mut'))[0];
