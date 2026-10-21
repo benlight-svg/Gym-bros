@@ -504,7 +504,9 @@ button,nav{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
  .dwd{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px;margin-top:14px}
  .dwx{background:var(--in);border-radius:14px;padding:10px 12px;min-height:clamp(88px,12vh,112px);font-size:13px;color:var(--mut);display:flex;flex-direction:column;gap:3px}
  .dwx>span{font-weight:600}.dwx b{color:var(--ink);font-size:15px;font-weight:600;line-height:1.2}
- .dwx.on{box-shadow:inset 0 0 0 1.5px var(--ac)}.dwx.on>span{color:var(--ac)}.dwx.td>span::after{content:" · today"}
+ .dwx.on{box-shadow:inset 0 0 0 1.5px var(--ac)}.dwx.on>span{color:var(--ac)}.dwx.td>span::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ac);margin-right:6px;vertical-align:1px}
+ .dwx{padding:12px;overflow-wrap:anywhere}.dwx b{margin-top:2px}
+ .card:has(>.dwd){display:flex;flex-direction:column}.card>.dwd{flex:1}
  .dcalm,.dcal{display:grid;grid-template-columns:auto repeat(26,minmax(0,1fr));gap:4px}
  .dcal b{display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:12px;font-weight:400;color:var(--mut)}
  .dcalm{margin:14px 0 6px;height:14px;font-size:12px;color:var(--mut)}.dcalm span{white-space:nowrap}
@@ -1290,7 +1292,7 @@ function deskMore(W){
  const kpis=[dTile('Sets this week',cs,fm(dl(cs,ps))+' vs last week',dl(cs,ps)<0),dTile('PRs, 30 days',pr30,'new estimated 1RM bests'),dTile('Training days, 30 d',d30,'of the last 30 days'),dTile('Since last workout',ago?ago+' d':'Today',esc(last.plan||'Custom'))];
  /* week */
  const dn=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],td=dstr(now);
- const wd=dn.map((n,i)=>{const d=addDays(t0,i),ws=cur.filter(w=>dstr(w.date)===d);return `<div class="dwx${ws.length?' on':''}${d===td?' td':''}"><span>${n}</span>${ws.length?ws.map(w=>`<b>${esc(w.plan||'Custom')}</b><div>${w.ex.reduce((a,e)=>a+e.sets.filter(x=>x.r>0).length,0)} sets · ${(dVol(w)/1000).toFixed(1)} t</div>`).join(''):'<div>Rest</div>'}</div>`}).join('');
+ const wd=dn.map((n,i)=>{const d=addDays(t0,i),ws=cur.filter(w=>dstr(w.date)===d);return `<div class="dwx${ws.length?' on':''}${d===td?' td':''}"><span>${n}</span>${ws.length?ws.map(w=>`<b>${esc(w.plan||'Custom')}</b><div>${w.ex.reduce((a,e)=>a+e.sets.filter(x=>x.r>0).length,0)} sets</div><div>${(dVol(w)/1000).toFixed(1)} t</div>`).join(''):'<div>Rest</div>'}</div>`}).join('');
  const row=(a,b,c)=>`<div class="ovlr"><span>${a}</span><span><b>${b}</b> <span class="mut">vs ${c}</span></span></div>`;
  const week=dCard('s8','This week','Monday to Sunday.',`<div class="dwd">${wd}</div>`);
  const cmp=dCard('s4','Versus last week','This week so far.',row('Workouts',cur.length,prv.length)+row('Sets',cs,ps)+row('Volume',(cv/1000).toFixed(1)+' t',(pv/1000).toFixed(1)+' t')+`<div class="dnote">Volume is <b>${fm(dl(cv,pv))}</b> against last week.</div>`);
