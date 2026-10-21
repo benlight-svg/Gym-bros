@@ -505,7 +505,8 @@ button,nav{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
  .dwx{background:var(--in);border-radius:14px;padding:10px 12px;min-height:clamp(88px,12vh,112px);font-size:13px;color:var(--mut);display:flex;flex-direction:column;gap:3px}
  .dwx>span{font-weight:600}.dwx b{color:var(--ink);font-size:15px;font-weight:600;line-height:1.2}
  .dwx.on{box-shadow:inset 0 0 0 1.5px var(--ac)}.dwx.on>span{color:var(--ac)}.dwx.td>span::after{content:" · today"}
- .dcalm,.dcal{display:grid;grid-template-columns:repeat(26,minmax(0,1fr));gap:4px}
+ .dcalm,.dcal{display:grid;grid-template-columns:auto repeat(26,minmax(0,1fr));gap:4px}
+ .dcal b{display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:12px;font-weight:400;color:var(--mut)}
  .dcalm{margin:14px 0 6px;height:14px;font-size:12px;color:var(--mut)}.dcalm span{white-space:nowrap}
  .dcal{grid-template-rows:repeat(7,auto);grid-auto-flow:column}
  .dcal i{aspect-ratio:1;border-radius:5px;background:var(--in)}
@@ -1301,7 +1302,7 @@ function deskMore(W){
  const mx=Math.max(...days.values(),1),mo=[];let cells='';
  for(let w=-25;w<=0;w++){const a=addDays(t0,7*w),m=new Date(a+'T12:00:00').toLocaleDateString(undefined,{month:'short'});mo.push(`<span>${w===-25||m!==mo.last?m:''}</span>`);mo.last=m;
   for(let d=0;d<7;d++){const k=addDays(a,d),v=days.get(k)||0;cells+=`<i class="${v?'c'+(1+Math.min(2,Math.floor(v/mx*3))):''}${k>td?' f':''}" title="${k}${v?' · '+(v/1000).toFixed(1)+' t':''}"></i>`}}
- const cal=dCard('s8','Training calendar','Every day for 26 weeks. Darker means more volume.',`<div class="dcalm">${mo.join('')}</div><div class="dcal">${cells}</div>`);
+ const cal=dCard('s8','Training calendar','Every day for 26 weeks. Darker means more volume.',`<div class="dcalm"><span></span>${mo.join('')}</div><div class="dcal">${'MTWTFSS'.split('').map(l=>`<b>${l}</b>`).join('')}${cells}</div>`);
  const first=wkStart(W[0].date),cnt=[];for(let a=first;a<=t0;a=addDays(a,7))cnt.push(wk((new Date(t0)-new Date(a))/6048e5|0).length);
  let run=0,lng=0;cnt.forEach(c=>{run=c?run+1:0;lng=Math.max(lng,run)});let k=cnt.length-1;if(!cnt[k])k--;let cst=0;while(k>=0&&cnt[k]){cst++;k--}
  const ds=[...days.keys()].sort();let gap=0;for(let i=1;i<ds.length;i++)gap=Math.max(gap,Math.round((new Date(ds[i])-new Date(ds[i-1]))/864e5)-1);
