@@ -400,6 +400,104 @@ button,nav{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
  .bento>.s3{grid-column:span 6}.bento>.s4,.bento>.s5{grid-column:span 6}.bento>.s7,.bento>.s8{grid-column:1/-1}
  .cols3{columns:2}
 }
+/* ===== Desktop: fit more in the viewport height (sizing only; sidebar, colours, mobile untouched) ===== */
+@media (min-width:900px){
+ body{padding-bottom:100px}
+ main{padding-top:12px}
+
+ /* hero */
+ .hero{padding:clamp(18px,4vh,36px) 0 clamp(14px,3vh,28px)}
+ .hero.sm{padding:clamp(12px,2.8vh,24px) 0 clamp(10px,2.2vh,20px)}
+ .hero .hlogo svg{width:clamp(110px,16vh,150px);margin:0 auto clamp(10px,2vh,18px)}
+ .hero h1{font-size:clamp(34px,min(4.6vw,7.4vh),58px)}
+ .hero.sm h1{font-size:clamp(30px,min(3.6vw,5.8vh),44px)}
+ .hero .sub{font-size:clamp(16px,2.5vh,21px);margin-top:clamp(6px,1.4vh,12px)}
+ .hero.sm .sub{font-size:clamp(15px,2.1vh,17px)}
+ .hero .chips.seg{margin-top:clamp(12px,2.2vh,20px)}
+ .hero .hact{margin-top:clamp(12px,2vh,18px)}
+ .hero button.w{padding:10px 24px;font-size:16px}
+
+ /* sections */
+ .sec{margin-top:clamp(28px,6vh,56px)}
+ .hero+.sec,.hero+.dcols,.hero+.dgrid{margin-top:4px}
+ .hero.sm+.sec{margin-top:4px}
+ .bento+.sec{margin-top:clamp(28px,6vh,56px)}
+ .sec>h2,.sec>.sh{font-size:clamp(24px,3.7vh,32px);margin:0 0 clamp(12px,2.2vh,20px)}
+
+ /* grids and cards */
+ .bento,.tiles,.stack,.dxgrid,.dgrid,.ovg{gap:14px}
+ .dcols{gap:20px}
+ .drail{top:16px;gap:14px}
+ .dmain{gap:14px}
+ .card{padding:20px}
+ .card h3{font-size:19px}
+ .bento>.card.s12 h3,.bento>.card.s12 b:first-child{font-size:22px}
+ .stat,.ovt{border-radius:20px}
+ .card{border-radius:20px}
+
+ /* start tiles */
+ .tiles>.card.row.sp{min-height:clamp(150px,22vh,200px);padding:22px;gap:14px}
+ .tiles>.card.row.sp h3{font-size:clamp(22px,3.4vh,28px)}
+ .tiles>.card.row.sp .mut{font-size:15px;margin-top:4px}
+ .tiles>.card.row.sp>button{padding:9px 24px;font-size:16px;min-height:42px}
+ .dpv{margin-top:8px;font-size:14px;line-height:1.4}
+
+ /* stat tiles */
+ .bento>.stat,.bento>.ovt{padding:20px;min-height:clamp(110px,16vh,150px)}
+ .bento.ex>.stat{min-height:clamp(86px,12vh,110px);padding:16px 20px}
+ .bento.ex>.stat b{font-size:22px}
+ .bento .big{font-size:clamp(44px,7.4vh,64px)}
+ .bento>.stat .mut{font-size:16px;margin-top:6px}
+ .ovv{font-size:clamp(34px,5.4vh,46px)}
+ .ovl{font-size:16px;margin-top:6px}
+ .ovs{font-size:14px;margin-top:4px}
+ .bento>.ovt{min-height:clamp(100px,14vh,130px)}
+ .dlast .nm{font-size:clamp(30px,5vh,42px);margin:6px 0 4px}
+ .dlast .mut{font-size:15px}
+ .dnotes{margin:0 auto 24px;gap:10px}
+
+ /* logging */
+ .dses .snum{font-size:clamp(34px,5.4vh,44px);margin:8px 0 2px}
+ .dses .snum small{font-size:18px}
+ .dses .ovpb{margin-top:10px}
+ .drail>button.p.w{min-height:46px;font-size:16px}
+ .dxgrid{grid-template-columns:repeat(auto-fill,minmax(340px,1fr))}
+
+ /* dashboard cards and headings */
+ .dgrid>h2{margin-top:12px;font-size:clamp(22px,3.4vh,28px)}
+ .drail h2,.dmain h2{font-size:clamp(22px,3.2vh,26px);margin:6px 0 0}
+ .dstack>.card{column-gap:28px}
+ .dgrid .hx{column-gap:22px}
+
+ /* progress analytics */
+ .dvhead{margin:12px 0 12px;gap:16px}
+ .dkp{gap:24px}
+ .dkp b{font-size:24px}
+ .dwk{height:clamp(100px,16vh,130px);margin-top:14px}
+ .dtool{margin:-6px 0 18px}
+ .dtool select{height:44px;font-size:16px}
+ .dtbl td{padding:10px 8px;font-size:15px}
+ .dtbl-w{max-height:min(620px,58vh)}
+ .dlife .ovlr{padding:10px 0}
+ .dbr{margin-top:12px}
+
+ /* modal */
+ .sbox{padding:22px;max-height:86vh}
+}
+
+/* Short laptop screens: tighten a little more */
+@media (min-width:900px) and (max-height:820px){
+ .hero{padding:14px 0 12px}
+ .hero.sm{padding:8px 0 8px}
+ .hero .hlogo svg{width:100px;margin-bottom:8px}
+ .hero .sub{margin-top:6px}
+ .sec,.bento+.sec{margin-top:28px}
+ .card{padding:16px}
+ .tiles>.card.row.sp{padding:18px;min-height:140px}
+ .bento>.stat,.bento>.ovt{padding:16px;min-height:100px}
+ .bento.ex>.stat{min-height:80px;padding:12px 16px}
+ .dnotes{margin-bottom:16px}
+}
 </style>
 </head>
 <body>
