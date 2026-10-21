@@ -477,7 +477,7 @@ button,nav{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
  .dtool{margin:-6px 0 18px}
  .dtool select{height:44px;font-size:16px}
  .dtbl td{padding:10px 8px;font-size:15px}
- .dtbl-w{max-height:min(620px,58vh)}
+ .dtbl-w{max-height:none;overflow:visible}
  .dlife .ovlr{padding:10px 0}
  .dbr{margin-top:12px}
 
@@ -1311,7 +1311,7 @@ function deskMore(W){
  const R=(a,b)=>`<div class="ovlr"><span>${a}</span><b>${b}</b></div>`;
  const streak=dCard('s4','Streaks','Weeks with at least one workout.',R('Current streak',cst+' wk')+R('Longest streak',lng+' wk')+R('Best week',Math.max(...cnt)+' workouts')+R('Active weeks',cnt.filter(c=>c).length+' of '+cnt.length)+R('Longest rest gap',gap+' days'));
  /* tables */
- const L=[...X].filter(([,a])=>a.length>=2).sort((a,b)=>b[1].length-a[1].length).slice(0,15);
+ const L=[...X].filter(([,a])=>a.length>=2).sort((a,b)=>b[1].length-a[1].length);
  const lifts=dCard('s12','All lifts','Exercises you have done at least twice, most-trained first.',`<div class="dtbl-w"><table class="dtbl"><tr><th>Exercise</th><th>Sessions</th><th>First 1RM</th><th>Best 1RM</th><th>Change</th><th>Heaviest</th><th>Last trained</th></tr>${L.map(([n,a])=>{const f=a[0].v,b=Math.max(...a.map(x=>x.v)),g=Math.round((b/f-1)*100);return `<tr><td>${esc(n)}</td><td>${a.length}</td><td>${r1(f)} kg</td><td>${r1(b)} kg</td><td class="${g>=0?'up':'dn'}">${g>0?'+':''}${g}%</td><td>${r1(Math.max(...a.map(x=>x.t)))} kg</td><td>${fd(a[a.length-1].d)}</td></tr>`}).join('')}</table></div>`);
  const rc=[...W].reverse().slice(0,10).map(w=>{let tp=null;w.ex.forEach(e=>{if(isBand(e.name)||isTimed(e.name))return;e.sets.forEach(x=>{if(x.r>0&&(!tp||e1(x.w,x.r)>e1(tp.w,tp.r)))tp={w:x.w,r:x.r,n:base(e.name)}})});return `<tr><td>${dLong(w.date)}</td><td class="l">${esc(w.plan||'Custom')}</td><td>${w.ex.length}</td><td>${w.ex.reduce((a,e)=>a+e.sets.filter(x=>x.r>0).length,0)}</td><td>${(dVol(w)/1000).toFixed(1)} t</td><td class="sets">${tp?esc(tp.n)+' '+tp.w+' kg × '+tp.r:'–'}</td></tr>`}).join('');
  const recent=dCard('s12','Recent workouts','Your last ten sessions.',`<table class="dtbl"><tr><th>Date</th><th style="text-align:left">Workout</th><th>Exercises</th><th>Sets</th><th>Volume</th><th style="text-align:left">Top set</th></tr>${rc}</table>`);
