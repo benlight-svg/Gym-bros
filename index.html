@@ -33,6 +33,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 input,select{font:inherit;width:100%;background:var(--in);color:var(--ink);border:1px solid var(--ln);border-radius:10px;padding:10px}
 .set{display:grid;grid-template-columns:28px 1fr 1fr 48px;gap:8px;align-items:center;margin-top:8px}
 .set b{color:var(--mut);text-align:center}
+.pwrap{position:relative;display:block}.pwrap input{width:100%}.parr{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--ac);font-size:13px;pointer-events:none}.pwrap input:not(:placeholder-shown)+.parr{display:none}
 .set button{padding:10px 0}.set button.on{background:var(--ac);color:var(--acx)}
 .big{font:800 34px/1 Montserrat,sans-serif}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -741,7 +742,6 @@ function setEq(i,nm){const o=S.active.ex[i],n=newEx(nm,o.ln);
 const STEPS={Cables:.625},stepOf=n=>STEPS[equipOf(n)]||2.5,r3=v=>+(+v).toFixed(3);
 function readyUp(n){const e=lastEx(n);if(!e||!e.sets.length||!e.sets.every(x=>x.r>=repMax(n)))return null;const w=Math.max(...e.sets.map(x=>x.w-(x.bw||0)));return{w,to:r3(w+stepOf(n))}}
 function lastDate(n){for(let i=S.workouts.length-1;i>=0;i--){const e=S.workouts[i].ex.find(x=>x.name===n);if(e&&e.sets.length)return S.workouts[i].date}return null}
-function progMsg(n){if(S.prog!=='last'||isBand(n)||isTimed(n))return '';const u=readyUp(n),le=lastEx(n);if(!u||!le)return '';return `<div class="tip" style="margin:0 0 6px">Last time (${fd(lastDate(n))}): ${fs(le.sets,n)}. You hit ${repMax(n)}+ on every set, so you could go up to ${u.to} kg${isBW(n)?' extra':''}.</div>`}
 function setProg(v){const o=S.prog==='last'?'last':'auto';S.prog=v==='last'?'last':'auto';if(S.prog!==o&&S.active)S.active.ex.forEach(e=>{const st=stepOf(e.name),d=S.prog==='last'?-st:st;e.sets.forEach(x=>{if(x.up&&!x.d&&x.w===''&&x.pw!==undefined)x.pw=r3(+x.pw+d)})});save();render()}
 function mkSets(name){const l=last(name),u=readyUp(name),un=isUni(name);
  let b=l?l.map(s=>({w:'',r:'',d:false,pw:r3((s.w-(s.bw||0))+(u&&S.prog!=='last'?stepOf(name):0)),pr:s.r,up:!!u,side:s.side||null})):[{w:'',r:'',d:false,side:null}];
@@ -779,7 +779,6 @@ function exCard(e,i){const a=S.active,l=last(e.name),B=isBW(e.name),uni=isUni(e.
  ${grp?`<div class="tip" style="margin:0 0 6px">${e.ln?'Superset · straight on to the next exercise':'Superset · last exercise of the pair'}</div>`:''}
  <div class="row sp"><h3>${esc(base(e.name))}${eq?`<span class="eq">${eq}</span>`:''}</h3><span class="row"><button class="hb" data-a="hx" data-i="${i}" aria-label="Show previous sessions">${HICON}</button><button class="hb" data-a="mn" data-i="${i}" aria-label="Exercise options">${DOTS}</button></span></div>
  
- ${progMsg(e.name)}
  ${le&&le.note?`<div class="mut">Last note: ${esc(le.note)}</div>`:''}
  ${HX[e.name]?hxPanel(e.name):''}${MN===i?menuPanel(e,i):''}
  ${(eq==='Timed'||eq==='Resistance Band'?[]:(e.warm||[])).map((s,j)=>`<div class="set wu"><b>W</b><input inputmode="decimal" placeholder="${s.pw!==undefined?s.pw:(B?'+kg':'kg')}" value="${s.w}" data-f="ww" data-i="${i}" data-j="${j}" aria-label="Warm-up weight"><input inputmode="numeric" placeholder="${s.pr!==undefined?s.pr:'reps'}" value="${s.r}" data-f="wr" data-i="${i}" data-j="${j}" aria-label="Warm-up reps"><button class="${s.d?'on':''}" data-a="wtick" data-i="${i}" data-j="${j}" aria-label="Mark warm-up done"><i class="fa-solid fa-check" aria-hidden="true"></i></button><button class="d" data-a="rmwarm" data-i="${i}" data-j="${j}" aria-label="Remove warm-up set"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button></div>`).join('')}
@@ -1086,7 +1085,7 @@ function fmtSec(t){t=Math.max(0,Math.round(+t||0));return Math.floor(t/60)+':'+S
 function exW(eq,s,i,j,B){
  if(eq==='Timed')return `<button class="swb${s.sw?' run':''}" data-a="swatch" data-i="${i}" data-j="${j}" aria-label="${s.sw?'Stop':'Start'} stopwatch"><span data-swl="${i}-${j}">${s.sw?'<i class="fa-solid fa-stop" aria-hidden="true"></i> '+fmtSec((Date.now()-s.sw)/1000):'<i class="fa-solid fa-play" aria-hidden="true"></i> Start'}</span></button>`;
  if(eq==='Resistance Band'){const ph=s.pw!==undefined&&bandN(s.pw)?bandN(s.pw)+' ↑':'Band colour';return `<select data-f="w" data-i="${i}" data-j="${j}" aria-label="Band colour" style="min-width:0;width:100%"><option value="">${ph}</option>${BANDS.map((b,k)=>`<option value="${k+1}" ${+s.w===k+1?'selected':''}>${b[0]}</option>`).join('')}</select>`}
- return `<input inputmode="decimal" placeholder="${s.pw!==undefined?s.pw+(s.up?' ↑':''):(B?'+kg':'kg')}" value="${s.w}" data-f="w" data-i="${i}" data-j="${j}" aria-label="Weight">`}
+ return `<span class="pwrap"><input inputmode="decimal" placeholder="${s.pw!==undefined?s.pw:(B?'+kg':'kg')}" value="${s.w}" data-f="w" data-i="${i}" data-j="${j}" aria-label="Weight">${s.pw!==undefined&&s.up?'<i class="parr fa-solid fa-arrow-up" aria-hidden="true"></i>':''}</span>`}
 function exR(eq,s,i,j){
  if(eq==='Timed')return `<input inputmode="numeric" placeholder="${s.pr!==undefined?s.pr:'sec'}" value="${s.r}" data-f="r" data-i="${i}" data-j="${j}" aria-label="Seconds">`;
  return `<input inputmode="numeric" placeholder="${s.pr!==undefined?s.pr:'reps'}" value="${s.r}" data-f="r" data-i="${i}" data-j="${j}" aria-label="Reps">`}
